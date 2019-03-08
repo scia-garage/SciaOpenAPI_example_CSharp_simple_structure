@@ -36,7 +36,7 @@ namespace SciaOpenAPI_example_CSS.mat
 
             //proj.Model.CreateCrossSection(new SCIA.OpenAPI.CrossSection(Guid.NewGuid(), "conc.rect", stmatid, "HEA260", 6, 0));
             Guid css_steel = Guid.NewGuid();
-            proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSection(css_steel, "steel.HEA", stmatid, "HEA260", 1, 0));
+            proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSectionManufactored(css_steel, "steel.HEA", stmatid, "HEA260", 1, 0, 0.2, 0.2));
             Console.WriteLine($"CSSs created in ADM");
 
 
@@ -65,14 +65,24 @@ namespace SciaOpenAPI_example_CSS.mat
             Guid b2 = Guid.NewGuid();
             Guid b3 = Guid.NewGuid();
             Guid b4 = Guid.NewGuid();
-            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b1, "b1", css_steel, n1, n5));
-            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b2, "b2", css_steel, n2, n6));
-            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b3, "b3", css_steel, n3, n7));
-            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b4, "b4", css_steel, n4, n8));
+            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b1, "b1", css_steel, new Guid[2] { n1, n5 }));
+            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b2, "b2", css_steel, new Guid[2] { n2, n6 }));
+            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b3, "b3", css_steel, new Guid[2] { n3, n7 }));
+            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b4, "b4", css_steel, new Guid[2] { n4, n8 }));
+            
 
             Guid s1 = Guid.NewGuid();
             Guid[] nodes = new Guid[4]{n5, n6, n7, n8};
             proj.Model.CreateSlab(new SCIA.OpenAPI.StructureModelDefinition.Slab(s1, "s1", 0, comatid, 0.15, nodes));
+
+            Guid lg1 = Guid.NewGuid();
+            proj.Model.CreateLoadGroup(new SCIA.OpenAPI.StructureModelDefinition.LoadGroup(lg1, "lg1", 0));
+
+            Guid lc1 = Guid.NewGuid();
+            proj.Model.CreateLoadCase(new SCIA.OpenAPI.StructureModelDefinition.LoadCase(lc1, "lc1", 0, lg1, 1));
+
+            Guid sf1 = Guid.NewGuid();
+            proj.Model.CreateSurfaceLoad(new SCIA.OpenAPI.StructureModelDefinition.SurfaceLoad(sf1, "sf1", -12500, lc1, s1, 2));
 
 
             proj.Model.RefreshModel_ToSCIAEngineer();
