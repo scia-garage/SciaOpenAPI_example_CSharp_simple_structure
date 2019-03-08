@@ -21,22 +21,59 @@ namespace SciaOpenAPI_example_CSS.mat
             Console.WriteLine($"Proj opened");
 
             Guid comatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.Material(comatid, "conc", 0, "C30/37"));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(comatid, "conc", 0, 3e4, 1e4, 0.3, 0, 2500));
             Guid stmatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.Material(stmatid, "steel", 1, "S355"));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(stmatid, "steel", 1, 3e4, 1e4, 0.3, 0, 2500));
             Guid timatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.Material(timatid, "timber", 2, "D22"));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(timatid, "timber", 2, 3e4, 1e4, 0.3, 0, 2500));
             Guid alumatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.Material(alumatid, "alu", 3, "EN-AW3003"));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(alumatid, "alu", 3, 3e4, 1e4, 0.3, 0, 2500));
             Guid mamatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.Material(mamatid, "masonry", 4, "M1"));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(mamatid, "masonry", 4, 3e4, 1e4, 0.3, 0, 2500));
             Guid omatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.Material(omatid, "other", 5, "O2"));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(omatid, "other", 5, 3e4, 1e4, 0.3, 0, 2500));
             Console.WriteLine($"Materials created in ADM");
 
-            proj.Model.CreateCrossSection(new SCIA.OpenAPI.CrossSection(Guid.NewGuid(), "conc.rect", stmatid, "HEA260", 6, 0));
-            proj.Model.CreateCrossSection(new SCIA.OpenAPI.CrossSection(Guid.NewGuid(), "steel.HEA", stmatid, "HEA260", 1, 0));
+            //proj.Model.CreateCrossSection(new SCIA.OpenAPI.CrossSection(Guid.NewGuid(), "conc.rect", stmatid, "HEA260", 6, 0));
+            Guid css_steel = Guid.NewGuid();
+            proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSection(css_steel, "steel.HEA", stmatid, "HEA260", 1, 0));
             Console.WriteLine($"CSSs created in ADM");
+
+
+            double a = 6;
+            double b = 8;
+            double c = 3;
+
+            Guid n1 = Guid.NewGuid();
+            Guid n2 = Guid.NewGuid();
+            Guid n3 = Guid.NewGuid();
+            Guid n4 = Guid.NewGuid();
+            Guid n5 = Guid.NewGuid();
+            Guid n6 = Guid.NewGuid();
+            Guid n7 = Guid.NewGuid();
+            Guid n8 = Guid.NewGuid();
+            proj.Model.CreateNode(new SCIA.OpenAPI.StructureModelDefinition.StructNode(n1, "n1", 0, 0, 0));
+            proj.Model.CreateNode(new SCIA.OpenAPI.StructureModelDefinition.StructNode(n2, "n2", a, 0, 0));
+            proj.Model.CreateNode(new SCIA.OpenAPI.StructureModelDefinition.StructNode(n3, "n3", a, b, 0));
+            proj.Model.CreateNode(new SCIA.OpenAPI.StructureModelDefinition.StructNode(n4, "n4", 0, b, 0));
+            proj.Model.CreateNode(new SCIA.OpenAPI.StructureModelDefinition.StructNode(n5, "n5", 0, 0, c));
+            proj.Model.CreateNode(new SCIA.OpenAPI.StructureModelDefinition.StructNode(n6, "n6", a, 0, c));
+            proj.Model.CreateNode(new SCIA.OpenAPI.StructureModelDefinition.StructNode(n7, "n7", a, b, c));
+            proj.Model.CreateNode(new SCIA.OpenAPI.StructureModelDefinition.StructNode(n8, "n8", 0, b, c));
+
+            Guid b1 = Guid.NewGuid();
+            Guid b2 = Guid.NewGuid();
+            Guid b3 = Guid.NewGuid();
+            Guid b4 = Guid.NewGuid();
+            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b1, "b1", css_steel, n1, n5));
+            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b2, "b2", css_steel, n2, n6));
+            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b3, "b3", css_steel, n3, n7));
+            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b4, "b4", css_steel, n4, n8));
+
+            Guid s1 = Guid.NewGuid();
+            Guid[] nodes = new Guid[4]{n5, n6, n7, n8};
+            proj.Model.CreateSlab(new SCIA.OpenAPI.StructureModelDefinition.Slab(s1, "s1", 0, comatid, 0.15, nodes));
+
 
             proj.Model.RefreshModel_ToSCIAEngineer();
             Console.WriteLine($"My model sent to SEn");
