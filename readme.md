@@ -1,4 +1,6 @@
+- start MS Visual Studio
 - create empty C# console app project .NET 4.6.1
-- Add reference to SCIA.OpenAPI.dll
+- Add reference to SCIA.OpenAPI.dll in Scia Engineer install folder
 - Create reference to EsaENV80.dll and edit property of reference to switch "Embed Interop Types" to "False"
-- Create new configuration for x86 / x64
+- Create new configuration for x86 / x64 as needed
+- Write your application
