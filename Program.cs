@@ -21,17 +21,17 @@ namespace SciaOpenAPI_example_CSS.mat
             Console.WriteLine($"Proj opened");
 
             Guid comatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(comatid, "conc", 0, 3e4, 1e4, 0.3, 0, 2500));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(comatid, "conc", 0, "S 350"));
             Guid stmatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(stmatid, "steel", 1, 3e4, 1e4, 0.3, 0, 2500));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(stmatid, "steel", 1, "C30/37"));
             Guid timatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(timatid, "timber", 2, 3e4, 1e4, 0.3, 0, 2500));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(timatid, "timber", 2, "D20"));
             Guid alumatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(alumatid, "alu", 3, 3e4, 1e4, 0.3, 0, 2500));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(alumatid, "alu", 3, "EN-AW5083"));
             Guid mamatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(mamatid, "masonry", 4, 3e4, 1e4, 0.3, 0, 2500));
+            //proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(mamatid, "masonry", 4, 3e4, 1e4, 0.3, 0, 2500));
             Guid omatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(omatid, "other", 5, 3e4, 1e4, 0.3, 0, 2500));
+            //proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(omatid, "other", 5, 3e4, 1e4, 0.3, 0, 2500));
             Console.WriteLine($"Materials created in ADM");
 
             //proj.Model.CreateCrossSection(new SCIA.OpenAPI.CrossSection(Guid.NewGuid(), "conc.rect", stmatid, "HEA260", 6, 0));
