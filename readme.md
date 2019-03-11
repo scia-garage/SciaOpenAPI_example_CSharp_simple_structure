@@ -10,4 +10,5 @@ To use this example application:
 - clone GIT repo
 - open project in MS Visual Studio
 - fix paths to referenced DLLs: SCIA.OpenAPI.dll and EsaENV80.dll
+- fix paths in code poinitng to esa.exe location, temp and template project
 - select appropriate configuration (x86/x64) and build
