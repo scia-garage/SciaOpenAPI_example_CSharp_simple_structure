@@ -21,7 +21,7 @@ namespace SciaOpenAPI_example_CSS.mat
             Console.WriteLine($"Proj opened");
 
             Guid comatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(comatid, "conc", 0, "S 350"));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(comatid, "conc", 0, "S 355"));
             Guid stmatid = Guid.NewGuid();
             proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(stmatid, "steel", 1, "C30/37"));
             Guid timatid = Guid.NewGuid();
