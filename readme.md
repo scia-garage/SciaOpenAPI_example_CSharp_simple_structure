@@ -8,8 +8,10 @@ To start new C# development project in MS Visual Studio to produce app that will
 - Write your application that use the SCIA.OpenAPI functions
 
 To use this example application:
-- clone GIT repo
+- install SCIA Engineer
+- clone this GIT repo
 - open project in MS Visual Studio
 - fix paths to referenced DLLs: SCIA.OpenAPI.dll and EsaENV80.dll
 - fix paths in code poinitng to esa.exe location, temp and template project
-- select appropriate configuration (x86/x64) and build
+- select appropriate configuration (x86/x64) as needed according to SCIA Engineer Architecture
+- build
