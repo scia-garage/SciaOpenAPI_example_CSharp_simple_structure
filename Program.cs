@@ -17,17 +17,17 @@ namespace SciaOpenAPI_example_CSS.mat
             env.RunSCIAEngineer(EnvESA80.TEnvESAApp_ShowWindow.eEPShowWindowShow);
             Console.WriteLine($"SEn opened");
 
-            SCIA.OpenAPI.EsaProject proj = env.OpenProject(@"c:\SCIA\GIThub\SciaOpenAPI_example_CSS.mat\res\empty.esa");
+            SCIA.OpenAPI.EsaProject proj = env.OpenProject(@"c:\SCIA\GIThub\SciaOpenAPI_example_CSS.mat\res\empty.with.mat.lib.esa");
             Console.WriteLine($"Proj opened");
 
             Guid comatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(comatid, "conc", 0, "S 355"));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(comatid, "conc", 0, "C30/37"));
             Guid stmatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(stmatid, "steel", 1, "C30/37"));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(stmatid, "steel", 1, "S 355"));
             Guid timatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(timatid, "timber", 2, "D20"));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(timatid, "timber", 2, "D24 (EN 338)"));
             Guid alumatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(alumatid, "alu", 3, "EN-AW5083"));
+            proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(alumatid, "alu", 3, "EN-AW 6005A (EP/O,ER/B) T6 (0-5)"));
             Guid mamatid = Guid.NewGuid();
             //proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(mamatid, "masonry", 4, 3e4, 1e4, 0.3, 0, 2500));
             Guid omatid = Guid.NewGuid();
