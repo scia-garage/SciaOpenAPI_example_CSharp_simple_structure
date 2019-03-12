@@ -36,7 +36,7 @@ namespace SciaOpenAPI_example_CSS.mat
 
             //proj.Model.CreateCrossSection(new SCIA.OpenAPI.CrossSection(Guid.NewGuid(), "conc.rect", stmatid, "HEA260", 6, 0));
             Guid css_steel = Guid.NewGuid();
-            proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSectionManufactored(css_steel, "steel.HEA", stmatid, "HEA260", 1, 0, 0.2, 0.2));
+            proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSectionManufactored(css_steel, "steel.HEA", stmatid, "HEA260", 1, 0));
             Console.WriteLine($"CSSs created in ADM");
 
 
