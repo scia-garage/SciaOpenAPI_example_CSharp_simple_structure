@@ -88,6 +88,9 @@ namespace SciaOpenAPI_example_CSS.mat
             proj.Model.RefreshModel_ToSCIAEngineer();
             Console.WriteLine($"My model sent to SEn");
 
+
+            proj.CreateMesh();
+
             Console.WriteLine($"Press key to exit");
             Console.ReadKey();
 
