@@ -11,13 +11,13 @@ namespace SciaOpenAPI_example_CSS.mat
         static void Main(string[] args)
         {
             Console.WriteLine($"Hello!");
-
+            string MyAppPath = AppDomain.CurrentDomain.BaseDirectory;
             SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(@"c:\scia\GIT\sen\A\Bin\release32", @".\Temp");
 
             env.RunSCIAEngineer(EnvESA80.TEnvESAApp_ShowWindow.eEPShowWindowShow);
             Console.WriteLine($"SEn opened");
 
-            SCIA.OpenAPI.EsaProject proj = env.OpenProject(@"c:\SCIA\GIThub\SciaOpenAPI_example_CSS.mat\res\empty.with.mat.lib.esa");
+            SCIA.OpenAPI.EsaProject proj = env.OpenProject(System.IO.Path.Combine(MyAppPath, @"..\..\..\res\empty.with.mat.lib.esa"));
             Console.WriteLine($"Proj opened");
 
             Guid comatid = Guid.NewGuid();
