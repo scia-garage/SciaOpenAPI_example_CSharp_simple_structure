@@ -11,6 +11,9 @@ To start new C# development project in MS Visual Studio to produce app that will
 To use this example application:
 - install SCIA Engineer
 - clone this GIT repo
+-- start command line
+-- go to desired directory
+-- write command "git clone <url_to_this_exmaple_app_repo_that_can_be_found_on_github_project_page>"
 - open project in MS Visual Studio
 - fix paths to referenced DLLs located in Scia Engineer install folder: SCIA.OpenAPI.dll and EnvESA80.dll
 - fix paths in code poinitng to esa.exe location, temp and template project
