@@ -34,13 +34,13 @@ namespace SciaOpenAPI_example_CSS.mat
             //proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(omatid, "other", 5, 3e4, 1e4, 0.3, 0, 2500));
             Console.WriteLine($"Materials created in ADM");
 
-            //proj.Model.CreateCrossSection(new SCIA.OpenAPI.CrossSection(Guid.NewGuid(), "conc.rect", stmatid, "HEA260", 6, 0));
+            proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSectionParametric(Guid.NewGuid(), "conc.rect", comatid, 1, new double[] { 0.2,0.4} ));
             Guid css_steel = Guid.NewGuid();
             proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSectionManufactored(css_steel, "steel.HEA", stmatid, "HEA260", 1, 0));
             Console.WriteLine($"CSSs created in ADM");
 
 
-            double a = 6;
+            double a = 6;     
             double b = 8;
             double c = 3;
 
@@ -69,7 +69,12 @@ namespace SciaOpenAPI_example_CSS.mat
             proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b2, "b2", css_steel, new Guid[2] { n2, n6 }));
             proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b3, "b3", css_steel, new Guid[2] { n3, n7 }));
             proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b4, "b4", css_steel, new Guid[2] { n4, n8 }));
-            
+
+            proj.Model.CreatePointSupport(new SCIA.OpenAPI.StructureModelDefinition.PointSupport(Guid.NewGuid(), "Su1", n1));
+            proj.Model.CreatePointSupport(new SCIA.OpenAPI.StructureModelDefinition.PointSupport(Guid.NewGuid(), "Su2", n2));
+            proj.Model.CreatePointSupport(new SCIA.OpenAPI.StructureModelDefinition.PointSupport(Guid.NewGuid(), "Su3", n3));
+            proj.Model.CreatePointSupport(new SCIA.OpenAPI.StructureModelDefinition.PointSupport(Guid.NewGuid(), "Su4", n4));
+
 
             Guid s1 = Guid.NewGuid();
             Guid[] nodes = new Guid[4]{n5, n6, n7, n8};
@@ -89,7 +94,10 @@ namespace SciaOpenAPI_example_CSS.mat
             Console.WriteLine($"My model sent to SEn");
 
 
-            proj.CreateMesh();
+            //proj.CreateMesh(); //needs dialogue click
+
+            proj.Model.RefreshModel_ToSCIAEngineer();
+            proj.RunCalculation();
 
             Console.WriteLine($"Press key to exit");
             Console.ReadKey();
