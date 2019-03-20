@@ -11,10 +11,10 @@ namespace SciaOpenAPI_example_CSS.mat
         static void Main(string[] args)
         {
             Console.WriteLine($"Hello!");
-            string MyAppPath = AppDomain.CurrentDomain.BaseDirectory;
+            string MyAppPath = AppDomain.CurrentDomain.BaseDirectory;   //= System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(@"c:\scia\GIT\sen\A\Bin\release32", @".\Temp");
 
-            env.RunSCIAEngineer(EnvESA80.TEnvESAApp_ShowWindow.eEPShowWindowShow);
+            env.RunSCIAEngineer(EnvESA80.TEnvESAApp_ShowWindow.eEPShowWindowShow); //eEPShowWindowHide
             Console.WriteLine($"SEn opened");
 
             SCIA.OpenAPI.EsaProject proj = env.OpenProject(System.IO.Path.Combine(MyAppPath, @"..\..\..\res\empty.with.mat.lib.esa"));
@@ -95,9 +95,24 @@ namespace SciaOpenAPI_example_CSS.mat
 
 
             //proj.CreateMesh(); //needs dialogue click
-
-            proj.Model.RefreshModel_ToSCIAEngineer();
+            
             proj.RunCalculation();
+            Console.WriteLine($"My model calculate");
+
+ 
+            SCIA.OpenAPI.Results.ResultsAPI rapi;
+            SCIA.OpenAPI.Results.Result IntFor1Db1 = new SCIA.OpenAPI.Results.Result();
+            SCIA.OpenAPI.Results.ResultKey keyIntFor1Db1 = new SCIA.OpenAPI.Results.ResultKey();
+
+            keyIntFor1Db1.CaseType = Results64Enums.eDsElementType.eDsElementType_LoadCase;
+            keyIntFor1Db1.CaseId = lc1;
+            keyIntFor1Db1.EntityType = Results64Enums.eDsElementType.eDsElementType_Beam;
+            keyIntFor1Db1.EntityName = "b1";
+            keyIntFor1Db1.ResultType = Results64Enums.eResultType.eFemBeamInnerForces;
+            
+            proj.Model.InitializeResultsAPI(out rapi);
+            IntFor1Db1 = rapi.LoadResult(keyIntFor1Db1);
+            Console.WriteLine(IntFor1Db1.GetTextOutput());
 
             Console.WriteLine($"Press key to exit");
             Console.ReadKey();
