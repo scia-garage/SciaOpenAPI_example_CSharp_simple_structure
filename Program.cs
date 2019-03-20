@@ -101,6 +101,8 @@ namespace SciaOpenAPI_example_CSS.mat
 
  
             SCIA.OpenAPI.Results.ResultsAPI rapi;
+            proj.Model.InitializeResultsAPI(out rapi);
+
             SCIA.OpenAPI.Results.Result IntFor1Db1 = new SCIA.OpenAPI.Results.Result();
             SCIA.OpenAPI.Results.ResultKey keyIntFor1Db1 = new SCIA.OpenAPI.Results.ResultKey();
 
@@ -108,11 +110,48 @@ namespace SciaOpenAPI_example_CSS.mat
             keyIntFor1Db1.CaseId = lc1;
             keyIntFor1Db1.EntityType = Results64Enums.eDsElementType.eDsElementType_Beam;
             keyIntFor1Db1.EntityName = "b1";
+            keyIntFor1Db1.Dimension = Results64Enums.eDimension.eDim_1D;
             keyIntFor1Db1.ResultType = Results64Enums.eResultType.eFemBeamInnerForces;
-            
-            proj.Model.InitializeResultsAPI(out rapi);
+            keyIntFor1Db1.CoordSystem = Results64Enums.eCoordSystem.eCoordSys_Local;
+
             IntFor1Db1 = rapi.LoadResult(keyIntFor1Db1);
             Console.WriteLine(IntFor1Db1.GetTextOutput());
+
+
+
+
+
+
+            SCIA.OpenAPI.Results.Result Def2Ds1 = new SCIA.OpenAPI.Results.Result();
+            SCIA.OpenAPI.Results.ResultKey keyDef2Ds1 = new SCIA.OpenAPI.Results.ResultKey();
+
+            keyDef2Ds1.CaseType = Results64Enums.eDsElementType.eDsElementType_LoadCase;
+            keyDef2Ds1.CaseId = lc1;
+            keyDef2Ds1.EntityType = Results64Enums.eDsElementType.eDsElementType_Slab;
+            keyDef2Ds1.EntityName = "s1";
+            keyDef2Ds1.Dimension = Results64Enums.eDimension.eDim_2D;
+            keyDef2Ds1.ResultType = Results64Enums.eResultType.eFemDeformations;
+            keyDef2Ds1.CoordSystem = Results64Enums.eCoordSystem.eCoordSys_Local;
+
+            Def2Ds1 = rapi.LoadResult(keyDef2Ds1);
+            Console.WriteLine(Def2Ds1.GetTextOutput());
+
+            double maxvalue = 0;
+            double pivot;
+            for (uint i=0;i< Def2Ds1.GetMeshElementCount(); i++)
+            {
+                pivot = Def2Ds1.GetValue(2, i);
+                if (System.Math.Abs(pivot) > System.Math.Abs(maxvalue))
+                    {
+                        maxvalue = pivot;
+                    
+                    };
+            };
+            Console.WriteLine("Maximum deformation on slab:");
+            Console.WriteLine(maxvalue);
+
+
+
 
             Console.WriteLine($"Press key to exit");
             Console.ReadKey();
