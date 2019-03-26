@@ -65,7 +65,13 @@ namespace SciaOpenAPI_example_CSS.mat
             Guid b2 = Guid.NewGuid();
             Guid b3 = Guid.NewGuid();
             Guid b4 = Guid.NewGuid();
-            proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b1, "b1", css_steel, new Guid[2] { n1, n5 }));
+
+            SCIA.OpenAPI.StructureModelDefinition.Beam mybeam = new SCIA.OpenAPI.StructureModelDefinition.Beam(b1, "b1", css_steel, new Guid[2] { n1, n5 });
+            mybeam.EccentricityEy = 0.1;
+            mybeam.EccentricityEz = 0.2;
+            proj.Model.CreateBeam(mybeam);
+
+
             proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b2, "b2", css_steel, new Guid[2] { n2, n6 }));
             proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b3, "b3", css_steel, new Guid[2] { n3, n7 }));
             proj.Model.CreateBeam(new SCIA.OpenAPI.StructureModelDefinition.Beam(b4, "b4", css_steel, new Guid[2] { n4, n8 }));
