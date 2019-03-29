@@ -14,7 +14,7 @@ namespace SciaOpenAPI_example_CSS.mat
             string MyAppPath = AppDomain.CurrentDomain.BaseDirectory;   //= System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(@"c:\scia\GIT\sen\A\Bin\release32", @".\Temp");
 
-            env.RunSCIAEngineer(EnvESA80.TEnvESAApp_ShowWindow.eEPShowWindowShow); //eEPShowWindowHide
+            env.RunSCIAEngineer(SCIA.OpenAPI.Environment.GuiMode.ShowWindowShowNormal); //eEPShowWindowHide
             Console.WriteLine($"SEn opened");
 
             SCIA.OpenAPI.EsaProject proj = env.OpenProject(System.IO.Path.Combine(MyAppPath, @"..\..\..\res\empty.with.mat.lib.esa"));
@@ -36,7 +36,7 @@ namespace SciaOpenAPI_example_CSS.mat
 
             proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSectionParametric(Guid.NewGuid(), "conc.rect", comatid, 1, new double[] { 0.2,0.4} ));
             Guid css_steel = Guid.NewGuid();
-            proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSectionManufactored(css_steel, "steel.HEA", stmatid, "HEA260", 1, 0));
+            proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSectionManufactured(css_steel, "steel.HEA", stmatid, "HEA260", 1, 0));
             Console.WriteLine($"CSSs created in ADM");
 
 
@@ -106,8 +106,7 @@ namespace SciaOpenAPI_example_CSS.mat
             Console.WriteLine($"My model calculate");
 
  
-            SCIA.OpenAPI.Results.ResultsAPI rapi;
-            proj.Model.InitializeResultsAPI(out rapi);
+            SCIA.OpenAPI.Results.ResultsAPI rapi = proj.Model.InitializeResultsAPI();
 
             SCIA.OpenAPI.Results.Result IntFor1Db1 = new SCIA.OpenAPI.Results.Result();
             SCIA.OpenAPI.Results.ResultKey keyIntFor1Db1 = new SCIA.OpenAPI.Results.ResultKey();
@@ -162,7 +161,7 @@ namespace SciaOpenAPI_example_CSS.mat
             Console.WriteLine($"Press key to exit");
             Console.ReadKey();
 
-            proj.CloseProject(EnvESA80.TEnvESAApp_SaveChanges.eEPSaveChangesNo);
+            proj.CloseProject(SCIA.OpenAPI.SaveMode.SaveChangesNo);
 
         }
     }

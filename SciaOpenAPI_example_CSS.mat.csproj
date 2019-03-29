@@ -74,10 +74,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EnvESA80">
-      <HintPath>..\..\GIT\SEN\A\Bin\release32\EnvESA80.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
     <Reference Include="SCIA.OpenAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\GIT\SEN\A\Bin\release32\SCIA.OpenAPI.dll</HintPath>
