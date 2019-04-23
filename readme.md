@@ -5,7 +5,7 @@
 - Add reference to SCIA.OpenAPI.dll located in Scia Engineer install folder, edit properties of reference and set Copy Local = False
 - Create new / use configuration for x86 / x64 as needed according to SCIA Engineer Architecture
 - Write your application that use the SCIA.OpenAPI functions
-- copy following DLLs to your application output directory: ESAAtl80Extern.dll, FemBase.dll, SCIA.OpenAPI.dll
+- copy following DLLs to your application output directory: SCIA.OpenAPI.dll
 
 
 
@@ -20,7 +20,7 @@
 - fix paths in code poinitng to Scia Engineer install directory and template file
 - select appropriate configuration (x86/x64) as needed according to SCIA Engineer Architecture
 - build
-- copy following DLLs to your application output directory: ESAAtl80Extern.dll, FemBase.dll, SCIA.OpenAPI.dll
+- copy following DLLs to your application output directory: SCIA.OpenAPI.dll
 - run
 
 # Troubleshooting:
