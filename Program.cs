@@ -9,7 +9,7 @@ namespace SciaOpenAPI_example_CSS.mat
         {
             Console.WriteLine($"Hello!");
             string MyAppPath = AppDomain.CurrentDomain.BaseDirectory;   //= System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(@"c:\scia\GIT\sen\A\Bin\release32", @".\Temp");
+            SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(@"c:\SCIA\VER\Full_R_19.0_patch_1_bugfix_19_05_03_10_37_19.0100.1053.32\", @".\Temp", "1.0.0.0");
 
             env.RunSCIAEngineer(SCIA.OpenAPI.Environment.GuiMode.ShowWindowShowNormal); //eEPShowWindowHide
             Console.WriteLine($"SEn opened");
@@ -140,7 +140,7 @@ namespace SciaOpenAPI_example_CSS.mat
 
             double maxvalue = 0;
             double pivot;
-            for (uint i=0;i< Def2Ds1.GetMeshElementCount(); i++)
+            for (int i=0;i< Def2Ds1.GetMeshElementCount(); i++)
             {
                 pivot = Def2Ds1.GetValue(2, i);
                 if (System.Math.Abs(pivot) > System.Math.Abs(maxvalue))
