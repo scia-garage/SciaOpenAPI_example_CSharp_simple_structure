@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +10,6 @@ namespace SciaOpenAPI_example_simple_structure
     {
         static void Main(string[] args)
         {
-
             //Initialization of OpenAPI environment
             SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(@"c:\Program Files (x86)\SCIA\Engineer19.0\", @"C:Temp\SCIATemp", "1.0.0.0");//path to the location of your installation
             //Run SCIA Engineer application
@@ -21,7 +20,9 @@ namespace SciaOpenAPI_example_simple_structure
             }
             Console.WriteLine($"SEn opened");
             //Open project in SCIA Engineer on specified path
-            SCIA.OpenAPI.EsaProject proj = env.OpenProject(@"C:\OpenAPIEmptyProject.esa");//path to teh empty SCIA Engineer project
+            string MyAppPath = AppDomain.CurrentDomain.BaseDirectory;
+            string templatePath = System.IO.Path.Combine(MyAppPath, @"..\..\..\..\res\OpenAPIEmptyProject.esa");//path to teh empty SCIA Engineer project
+            SCIA.OpenAPI.EsaProject proj = env.OpenProject(templatePath);
             if (proj == null)
             {
                 return;
@@ -44,7 +45,7 @@ namespace SciaOpenAPI_example_simple_structure
             string steelProfile = Console.ReadLine();
             proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSectionManufactured(css_steel, "steel.HEA", stmatid, steelProfile, 1, 0));
             Console.WriteLine($"CSSs created in ADM");
-            
+
             Console.WriteLine($"Set parameter a");
             double a = Convert.ToDouble(Console.ReadLine());
             Console.WriteLine($"Set parameter b");
