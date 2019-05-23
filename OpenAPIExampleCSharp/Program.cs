@@ -29,11 +29,11 @@ namespace SciaOpenAPI_example_simple_structure
             }
             Console.WriteLine($"Proj opened");
             //Create materials in local ADM
-            Console.WriteLine($"Set grade for concrete material");
+            Console.WriteLine($"Set grade for concrete material: ");
             string conMatGrade = Console.ReadLine();
             Guid comatid = Guid.NewGuid();
             proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(comatid, "conc", 0, conMatGrade));
-            Console.WriteLine($"Set grade for steel material");
+            Console.WriteLine($"Set grade for steel material: ");
             string steelMatGrade = Console.ReadLine();
             Guid stmatid = Guid.NewGuid();
             proj.Model.CreateMaterial(new SCIA.OpenAPI.StructureModelDefinition.Material(stmatid, "steel", 1, steelMatGrade));
@@ -41,16 +41,16 @@ namespace SciaOpenAPI_example_simple_structure
             //Create cross-sections in local ADM
             //proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSectionParametric(Guid.NewGuid(), "conc.rect", comatid, 1, new double[] { 0.2, 0.4 }));//example of parametric CSS - rectangle
             Guid css_steel = Guid.NewGuid();
-            Console.WriteLine($"Set steel profile");
+            Console.WriteLine($"Set steel profile: ");
             string steelProfile = Console.ReadLine();
             proj.Model.CreateCrossSection(new SCIA.OpenAPI.StructureModelDefinition.CrossSectionManufactured(css_steel, "steel.HEA", stmatid, steelProfile, 1, 0));
             Console.WriteLine($"CSSs created in ADM");
 
-            Console.WriteLine($"Set parameter a");
+            Console.WriteLine($"Set parameter a: ");
             double a = Convert.ToDouble(Console.ReadLine());
-            Console.WriteLine($"Set parameter b");
+            Console.WriteLine($"Set parameter b: ");
             double b = Convert.ToDouble(Console.ReadLine());
-            Console.WriteLine($"Set parameter c");
+            Console.WriteLine($"Set parameter c: ");
             double c = Convert.ToDouble(Console.ReadLine());
 
             Guid n1 = Guid.NewGuid();
@@ -89,7 +89,7 @@ namespace SciaOpenAPI_example_simple_structure
 
             Guid s1 = Guid.NewGuid();
             Guid[] nodes = new Guid[4] { n5, n6, n7, n8 };
-            Console.WriteLine($"Set thickness of the slab a");
+            Console.WriteLine($"Set thickness of the slab: ");
             double thickness = Convert.ToDouble(Console.ReadLine());
             //Create flat slab in local ADM
             proj.Model.CreateSlab(new SCIA.OpenAPI.StructureModelDefinition.Slab(s1, "s1", 0, comatid, thickness, nodes));
@@ -103,7 +103,7 @@ namespace SciaOpenAPI_example_simple_structure
             proj.Model.CreateLoadCase(new SCIA.OpenAPI.StructureModelDefinition.LoadCase(lc1, "lc1", 0, lg1, 1));
 
             Guid sf1 = Guid.NewGuid();
-            Console.WriteLine($"Set value of surface load on the slab");
+            Console.WriteLine($"Set value of surface load on the slab: ");
             double loadValue = Convert.ToDouble(Console.ReadLine());
             //Create surface load on slab in local ADM
             proj.Model.CreateSurfaceLoad(new SCIA.OpenAPI.StructureModelDefinition.SurfaceLoad(sf1, "sf1", loadValue, lc1, s1, 2));
