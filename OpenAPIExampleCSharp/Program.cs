@@ -11,7 +11,7 @@ namespace SciaOpenAPI_example_simple_structure
         static void Main(string[] args)
         {
             //Initialization of OpenAPI environment
-            using (SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(@"c:\SCIA\VER\Full_19.0.1205.32_rel_19.0_patch_1_x86\", @".\SCIATemp", "1.0.0.0"))//path to the location of your installation and temp path for logs)
+            using (SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(@"c:\Program Files (x86)\SCIA\Engineer19.0\", @".\SCIATemp", "1.0.0.0"))//path to the location of your installation and temp path for logs)
             {
                 //Run SCIA Engineer application
                 bool openedSE = env.RunSCIAEngineer(SCIA.OpenAPI.Environment.GuiMode.ShowWindowShow);
