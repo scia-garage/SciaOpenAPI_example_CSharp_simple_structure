@@ -5,7 +5,8 @@
 - Add reference to SCIA.OpenAPI.dll located in Scia Engineer install folder, edit properties of reference and set Copy Local = False
 - Create new / use configuration for x86 / x64 as needed according to SCIA Engineer Architecture
 - Write your application that use the SCIA.OpenAPI functions
-- copy following DLLs to your application output directory: SCIA.OpenAPI.dll, ESAAtl80Extern.dll
+- Don't forget to use "using" statement for environment object creation OR call the Environment's Dispose() method when you finish your work with SCIA OpenAPI
+- Copy following DLLs to your application output directory: SCIA.OpenAPI.dll, ESAAtl80Extern.dll
 
 
 
@@ -16,8 +17,8 @@
   - go to desired directory
   - write command "git clone <url_to_this_exmaple_app_repo_that_can_be_found_on_github_project_page>"
 - open project in MS Visual Studio
-- fix paths to referenced DLL located in your Scia Engineer install folder: SCIA.OpenAPI.dll
-- fix paths in code poinitng to Scia Engineer install directory and template file
+- check correctness of path to referenced DLL located in your Scia Engineer install folder: SCIA.OpenAPI.dll (e.g. edit the .csproj)
+- check correctness of paths in code poinitng to Scia Engineer install directory and template file
 - select appropriate configuration (x86/x64) as needed according to SCIA Engineer Architecture
 - build
 - copy following DLLs to your application output directory: SCIA.OpenAPI.dll, ESAAtl80Extern.dll
