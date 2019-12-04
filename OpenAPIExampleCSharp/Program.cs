@@ -7,16 +7,88 @@ using SCIA.OpenAPI.StructureModelDefinition;
 using SCIA.OpenAPI.Results;
 using SCIA.OpenAPI.OpenAPIEnums;
 using Results64Enums;
+using System.IO;
+using System.Reflection;
 
 namespace SciaOpenAPI_example_simple_structure
 {
     class Program
     {
-        static void Main(string[] args)
+        private static string GetAppPath()
+        {
+            //var directory = new DirectoryInfo(Environment.CurrentDirectory);
+            //return directory.Parent.FullName;
+            return @"c:\WORK\SCIA-ENGINEER\TESTING-VERSIONS\Full_19.1.2010.32_rel_19.1_patch_2_x86\"; // SEn application installation folder, don't forget run "EP_regsvr32 esa.exe" from commandline with Admin rights
+        }
+
+        /// <summary>
+        /// Path to Scia engineer
+        /// </summary>
+        static private string SciaEngineerFullPath => GetAppPath();
+
+
+        /// <sumamary>
+        /// Path to SCIA Engineer temp
+        /// </sumamary>
+        static private string SciaEngineerTempPath => GetTempPath();
+
+        private static string GetTempPath()
+        {
+            return @"c:\WORK\SCIA-ENGINEER\TESTING-VERSIONS\Full_19.1.2010.32_rel_19.1_patch_2_x86\Temp\"; // Must be SEn application temp path, run SEn and go to menu: Setup -> Options -> Directories -> Temporary files
+        }
+
+        static private string SciaEngineerProjecTemplate => GetTemplatePath();
+
+        private static string GetTemplatePath()
+        {
+            //Open project in SCIA Engineer on specified path
+            string MyAppPath = AppDomain.CurrentDomain.BaseDirectory;
+            return Path.Combine(MyAppPath, @"..\..\..\..\res\OpenAPIEmptyProject.esa");//path to teh empty SCIA Engineer project
+
+        }
+
+        static private string AppLogPath => GetThisAppLogPath();    
+
+         static private string GetThisAppLogPath() {
+             return @"c:\TEMP\OpenAPI\MyLogsTemp"; // Folder for storing of log files for this console application
+         }
+
+        private static void DeleteTemp()
+        {
+
+            if (Directory.Exists(SciaEngineerTempPath)){
+                Directory.Delete(SciaEngineerTempPath, true);
+            }
+
+        }
+
+        /// <summary>
+        /// Assembly resolve method has to be call here
+        /// </summary>
+    private static void SciaOpenApiAssemblyResolve()
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+            {
+                string dllName = args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll";
+                string dllFullPath = Path.Combine(SciaEngineerFullPath, dllName);
+                if (!File.Exists(dllFullPath))
+                {
+                    //return null;
+                    dllFullPath = Path.Combine(SciaEngineerFullPath, "OpenAPI_dll", dllName);
+                }
+                if (!File.Exists(dllFullPath))
+                {
+                    return null;
+                }
+                return Assembly.LoadFrom(dllFullPath);
+            };
+        }
+
+        static private void RunSCIAOpenAPI()
         {
 
             //Initialization of OpenAPI environment
-            using (SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(@"c:\Program Files (x86)\SCIA\Engineer19.1\", @".\SCIATemp", "1.0.0.0"))// path to the location of your installation and temp path for logs)
+           using (SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(SciaEngineerFullPath, AppLogPath, "1.0.0.0"))// path to the location of your installation and temp path for logs)
             {
                 //Run SCIA Engineer application
                 bool openedSE = env.RunSCIAEngineer(SCIA.OpenAPI.Environment.GuiMode.ShowWindowShow);
@@ -25,10 +97,7 @@ namespace SciaOpenAPI_example_simple_structure
                     return;
                 }
                 Console.WriteLine($"SEn opened");
-                //Open project in SCIA Engineer on specified path
-                string MyAppPath = AppDomain.CurrentDomain.BaseDirectory;
-                string templatePath = System.IO.Path.Combine(MyAppPath, @"..\..\..\..\res\OpenAPIEmptyProject.esa");//path to teh empty SCIA Engineer project
-                SCIA.OpenAPI.EsaProject proj = env.OpenProject(templatePath);
+               SCIA.OpenAPI.EsaProject proj = env.OpenProject(SciaEngineerProjecTemplate);
                 if (proj == null)
                 {
                     return;
@@ -266,7 +335,12 @@ namespace SciaOpenAPI_example_simple_structure
 
         }
 
-
+        static void Main()
+        {
+            SciaOpenApiAssemblyResolve();
+            DeleteTemp();
+            RunSCIAOpenAPI();
+        }
     }
 }
 
