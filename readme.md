@@ -7,7 +7,7 @@
 - Add reference to SCIA.OpenAPI.dll located in Sci Engineer install folder, edit properties of reference and set Copy Local = False
 - Create new / use configuration for x86 / x64 as needed according to SCIA Engineer Architecture
 - write method for resolving of assemblies - see sample code
-
+```C#
         private static void SciaOpenApiAssemblyResolve()
         {
             AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
@@ -26,8 +26,9 @@
                 return Assembly.LoadFrom(dllFullPath);
             };
         }
+```
 - write method for deliting temp folder
-  
+  ``` C#
         private static void DeleteTemp()
         {
 
@@ -36,6 +37,7 @@
             }
 
         }
+```
 - Write your application that use the SCIA.OpenAPI functions
 - Don't forget to use "using" statement for environment object creation OR call the Environment's Dispose() method when you finish your work with SCIA OpenAPI
 
