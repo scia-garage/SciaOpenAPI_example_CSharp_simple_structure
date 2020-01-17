@@ -10,16 +10,21 @@ using SCIA.OpenAPI.OpenAPIEnums;
 using Results64Enums;
 using System.IO;
 using System.Reflection;
+using SCIA.OpenAPI;
 
 namespace SciaOpenAPI_example_simple_structure
 {
+
     class Program
     {
+        private static Guid Lc1Id { get; } = Guid.NewGuid();
+        private static Guid C1Id { get; } = Guid.NewGuid();
+        private static string SlabName { get; } = "S1";
+
         private static string GetAppPath()
         {
-            //var directory = new DirectoryInfo(Environment.CurrentDirectory);
-            //return directory.Parent.FullName;
-            return @"C:\Program Files (x86)\SCIA\Engineer19.1\"; // SEn application installation folder, don't forget run "EP_regsvr32 esa.exe" from commandline with Admin rights
+            // SEn application installation folder, don't forget run "esa.exe /regserver" from commandline with Admin rights
+            return @"C:\Program Files (x86)\SCIA\Engineer19.1\";
         }
 
         /// <summary>
@@ -35,25 +40,27 @@ namespace SciaOpenAPI_example_simple_structure
 
         private static string GetTempPath()
         {
-            return @"C:\Users\jbroz\ESA19.1\Temp\"; // Must be SEn application temp path, run SEn and go to menu: Setup -> Options -> Directories -> Temporary files
+            // Must be SEn application temp path, run SEn and go to menu: Setup -> Options -> Directories -> Temporary files
+            return @"C:\Users\jbroz\ESA19.1\Temp\"; 
         }
 
         static private string SciaEngineerProjecTemplate => GetTemplatePath();
 
         private static string GetTemplatePath()
         {
-            //Open project in SCIA Engineer on specified path
-            string MyAppPath = AppDomain.CurrentDomain.BaseDirectory;
-            //return Path.Combine(MyAppPath, @"..\..\..\..\res\OpenAPIEmptyProject.esa");//path to teh empty SCIA Engineer project
+            //path to teh empty SCIA Engineer project
             return @"C:\WORK\SourceCodes\SciaOpenAPI_example_CSharp_simple_structure\res\OpenAPIEmptyProject.esa";
         }
 
         static private string AppLogPath => GetThisAppLogPath();    
 
-         static private string GetThisAppLogPath() {
-             return @"c:\TEMP\OpenAPI\MyLogsTemp"; // Folder for storing of log files for this console application
-         }
+        static private string GetThisAppLogPath() 
+        {
+            // Folder for storing of log files for this console application
+            return @"c:\TEMP\OpenAPI\MyLogsTemp"; 
+        }
 
+        // before each run of the application, delete of temp folder is neccessary
         private static void DeleteTemp()
         {
 
@@ -65,8 +72,9 @@ namespace SciaOpenAPI_example_simple_structure
 
         /// <summary>
         /// Assembly resolve method has to be call here
+        /// This is needed due to not copy dll into folder where exe file of this application is placed
         /// </summary>
-    private static void SciaOpenApiAssemblyResolve()
+        private static void SciaOpenApiAssemblyResolve()
         {
             AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
             {
@@ -83,12 +91,134 @@ namespace SciaOpenAPI_example_simple_structure
                 }
                 return Assembly.LoadFrom(dllFullPath);
             };
-        }                       
-                                                                                             
-        static private void RunSCIAOpenAPI()
-        {
+        }
 
-            //Initialization of OpenAPI environment
+        /// <summary>
+        ///Method create model in proj environment
+        /// </summary>
+        private static void CreateModel(Structure model)
+        {
+            //Create materials in local ADM
+            Console.WriteLine($"Set grade for concrete material: ");
+            string conMatGrade = Console.ReadLine();
+            Guid comatid = Guid.NewGuid();
+            model.CreateMaterial(new Material(comatid, "conc", 0, conMatGrade));
+            //Guid test = model.FindMaterialGuid(conMatGrade);
+            Console.WriteLine($"Set grade for steel material: ");
+            string steelMatGrade = Console.ReadLine();
+            Guid stmatid = Guid.NewGuid();
+            model.CreateMaterial(new Material(stmatid, "steel", 1, steelMatGrade));
+            Console.WriteLine($"Materials created in ADM");
+            Guid css_steel = Guid.NewGuid();
+            Console.WriteLine($"Set steel profile: ");
+            string steelProfile = Console.ReadLine();
+            model.CreateCrossSection(new CrossSectionManufactured(css_steel, "steel.HEA", stmatid, steelProfile, 1, 0));
+            Console.WriteLine($"CSSs created in ADM");
+
+            Console.WriteLine($"Set parameter a: ");
+            double a = Convert.ToDouble(Console.ReadLine());
+            Console.WriteLine($"Set parameter b: ");
+            double b = Convert.ToDouble(Console.ReadLine());
+            Console.WriteLine($"Set parameter c: ");
+            double c = Convert.ToDouble(Console.ReadLine());
+
+            Guid n1 = Guid.NewGuid();
+            Guid n2 = Guid.NewGuid();
+            Guid n3 = Guid.NewGuid();
+            Guid n4 = Guid.NewGuid();
+            Guid n5 = Guid.NewGuid();
+            Guid n6 = Guid.NewGuid();
+            Guid n7 = Guid.NewGuid();
+            Guid n8 = Guid.NewGuid();
+            //Create structural nodes in local ADM
+            model.CreateNode(new StructNode(n1, "n1", 0, 0, 0));
+            model.CreateNode(new StructNode(n2, "n2", a, 0, 0));
+            model.CreateNode(new StructNode(n3, "n3", a, b, 0));
+            model.CreateNode(new StructNode(n4, "n4", 0, b, 0));
+            model.CreateNode(new StructNode(n5, "n5", 0, 0, c));
+            model.CreateNode(new StructNode(n6, "n6", a, 0, c));
+            model.CreateNode(new StructNode(n7, "n7", a, b, c));
+            model.CreateNode(new StructNode(n8, "n8", 0, b, c));
+
+            Guid b1 = Guid.NewGuid();
+            Guid b2 = Guid.NewGuid();
+            Guid b3 = Guid.NewGuid();
+            Guid b4 = Guid.NewGuid();
+            //Create beams in local ADM
+            model.CreateBeam(new Beam(b1, "b1", css_steel, new Guid[2] { n1, n5 }));
+            model.CreateBeam(new Beam(b2, "b2", css_steel, new Guid[2] { n2, n6 }));
+            model.CreateBeam(new Beam(b3, "b3", css_steel, new Guid[2] { n3, n7 }));
+            model.CreateBeam(new Beam(b4, "b4", css_steel, new Guid[2] { n4, n8 }));
+            //Create fix nodal support in local ADM
+            var Su1 = new PointSupport(Guid.NewGuid(), "Su1", n1)
+            {
+                ConstraintRx = eConstraintType.Free,
+                ConstraintRy = eConstraintType.Free,
+                ConstraintRz = eConstraintType.Free
+            };
+            model.CreatePointSupport(Su1);
+            model.CreatePointSupport(new PointSupport(Guid.NewGuid(), "Su2", n2));
+            model.CreatePointSupport(new PointSupport(Guid.NewGuid(), "Su3", n3));
+            model.CreatePointSupport(new PointSupport(Guid.NewGuid(), "Su4", n4));
+
+            Guid s1 = Guid.NewGuid();
+            Guid[] nodes = new Guid[4] { n5, n6, n7, n8 };
+            Console.WriteLine($"Set thickness of the slab: ");
+            double thickness = Convert.ToDouble(Console.ReadLine());
+            //Create flat slab in local ADM
+            model.CreateSlab(new Slab(s1, SlabName, 0, comatid, thickness, nodes));
+
+
+
+            Guid lg1 = Guid.NewGuid();
+            //Create load group in local ADM
+            model.CreateLoadGroup(new LoadGroup(lg1, "lg1", 0));
+
+            //Create load case in local ADM
+            model.CreateLoadCase(new LoadCase(Lc1Id, "lc1", 0, lg1, 1));
+
+            //Combination
+            CombinationItem[] combinationItems = new CombinationItem[1] { new CombinationItem(Lc1Id, 1.5) };
+            Combination C1 = new Combination(C1Id, "C1", combinationItems)
+            {
+                Category = eLoadCaseCombinationCategory.AccordingNationalStandard,
+                NationalStandard = eLoadCaseCombinationStandard.EnUlsSetC
+            };
+            model.CreateCombination(C1);
+
+            Guid sf1 = Guid.NewGuid();
+            Console.WriteLine($"Set value of surface load on the slab: ");
+            double loadValue = Convert.ToDouble(Console.ReadLine());
+            //Create surface load on slab in local ADM
+            model.CreateSurfaceLoad(new SurfaceLoad(sf1, "sf1", loadValue, Lc1Id, s1, 2));
+            // line support on B1
+            var lineSupport = new LineSupport(Guid.NewGuid(), "lineSupport", b1)
+            {
+                Member = b1,
+                ConstraintRx = eConstraintType.Free,
+                ConstraintRy = eConstraintType.Free,
+                ConstraintRz = eConstraintType.Free
+            };
+            model.CreateLineSupport(lineSupport);
+            //line load on B1
+            var lineLoad = new LineLoadOnBeam(Guid.NewGuid(), "lineLoad")
+            {
+                Member = b1,
+                LoadCase = Lc1Id,
+                Value1 = -12500,
+                Value2 = -12500,
+                Direction = eDirection.X
+            };
+            model.CreateLineLoad(lineLoad);
+
+        }
+
+        /// <summary>
+        /// This method represented simple use of OpenAPI, initialization of environment, creation of model, linear calculation and reading results
+        /// </summary>
+        static private void RunSCIAOpenAPI_simple()
+        {
+           //Initialization of OpenAPI environment
            using (SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(SciaEngineerFullPath, AppLogPath, "1.0.0.0"))// path to the location of your installation and temp path for logs)
             {
                 //Run SCIA Engineer application
@@ -97,138 +227,22 @@ namespace SciaOpenAPI_example_simple_structure
                 {
                     throw new InvalidOperationException($"Cannot run SCIA Engineer");
                 }
-                Console.WriteLine($"SEn opened");
-               SCIA.OpenAPI.EsaProject proj = env.OpenProject(SciaEngineerProjecTemplate);
+                //Open project
+                SCIA.OpenAPI.EsaProject proj = env.OpenProject(SciaEngineerProjecTemplate);
                 if (proj == null)
                 {
-                    return;
+                    throw new InvalidOperationException($"Cannot open project");
                 }
-                Console.WriteLine($"Proj opened");
-                //Create materials in local ADM
-                Console.WriteLine($"Set grade for concrete material: ");
-                string conMatGrade = Console.ReadLine();
-                Guid comatid = Guid.NewGuid();
-                proj.Model.CreateMaterial(new Material(comatid, "conc", 0, conMatGrade));
-                //Guid test = proj.Model.FindMaterialGuid(conMatGrade);
-                Console.WriteLine($"Set grade for steel material: ");
-                string steelMatGrade = Console.ReadLine();
-                Guid stmatid = Guid.NewGuid();
-                proj.Model.CreateMaterial(new Material(stmatid, "steel", 1, steelMatGrade));
-                Console.WriteLine($"Materials created in ADM");
-                //Create cross-sections in local ADM
-                //proj.Model.CreateCrossSection(new CrossSectionParametric(Guid.NewGuid(), "conc.rect", comatid, 1, new double[] { 0.2, 0.4 }));//example of parametric CSS - rectangle
-                Guid css_steel = Guid.NewGuid();
-                Console.WriteLine($"Set steel profile: ");
-                string steelProfile = Console.ReadLine();
-                proj.Model.CreateCrossSection(new CrossSectionManufactured(css_steel, "steel.HEA", stmatid, steelProfile, 1, 0));
-                Console.WriteLine($"CSSs created in ADM");
 
-                Console.WriteLine($"Set parameter a: ");
-                double a = Convert.ToDouble(Console.ReadLine());
-                Console.WriteLine($"Set parameter b: ");
-                double b = Convert.ToDouble(Console.ReadLine());
-                Console.WriteLine($"Set parameter c: ");
-                double c = Convert.ToDouble(Console.ReadLine());
-
-                Guid n1 = Guid.NewGuid();
-                Guid n2 = Guid.NewGuid();
-                Guid n3 = Guid.NewGuid();
-                Guid n4 = Guid.NewGuid();
-                Guid n5 = Guid.NewGuid();
-                Guid n6 = Guid.NewGuid();
-                Guid n7 = Guid.NewGuid();
-                Guid n8 = Guid.NewGuid();
-                //Create structural nodes in local ADM
-                proj.Model.CreateNode(new StructNode(n1, "n1", 0, 0, 0));
-                proj.Model.CreateNode(new StructNode(n2, "n2", a, 0, 0));
-                proj.Model.CreateNode(new StructNode(n3, "n3", a, b, 0));
-                proj.Model.CreateNode(new StructNode(n4, "n4", 0, b, 0));
-                proj.Model.CreateNode(new StructNode(n5, "n5", 0, 0, c));
-                proj.Model.CreateNode(new StructNode(n6, "n6", a, 0, c));
-                proj.Model.CreateNode(new StructNode(n7, "n7", a, b, c));
-                proj.Model.CreateNode(new StructNode(n8, "n8", 0, b, c));
-
-                Guid b1 = Guid.NewGuid();
-                Guid b2 = Guid.NewGuid();
-                Guid b3 = Guid.NewGuid();
-                Guid b4 = Guid.NewGuid();
-                //Create beams in local ADM
-                proj.Model.CreateBeam(new Beam(b1, "b1", css_steel, new Guid[2] { n1, n5 }));
-                proj.Model.CreateBeam(new Beam(b2, "b2", css_steel, new Guid[2] { n2, n6 }));
-                proj.Model.CreateBeam(new Beam(b3, "b3", css_steel, new Guid[2] { n3, n7 }));
-                proj.Model.CreateBeam(new Beam(b4, "b4", css_steel, new Guid[2] { n4, n8 }));
-                //Create fix nodal support in local ADM
-                var Su1 = new PointSupport(Guid.NewGuid(), "Su1", n1)
-                {
-                    ConstraintRx = eConstraintType.Free,
-                    ConstraintRy = eConstraintType.Free,
-                    ConstraintRz = eConstraintType.Free
-                };
-                proj.Model.CreatePointSupport(Su1);
-                proj.Model.CreatePointSupport(new PointSupport(Guid.NewGuid(), "Su2", n2));
-                proj.Model.CreatePointSupport(new PointSupport(Guid.NewGuid(), "Su3", n3));
-                proj.Model.CreatePointSupport(new PointSupport(Guid.NewGuid(), "Su4", n4));
-
-                Guid s1 = Guid.NewGuid();
-                Guid[] nodes = new Guid[4] { n5, n6, n7, n8 };
-                Console.WriteLine($"Set thickness of the slab: ");
-                double thickness = Convert.ToDouble(Console.ReadLine());
-                //Create flat slab in local ADM
-                string slabName = "SLAB_1";
-                proj.Model.CreateSlab(new Slab(s1, slabName, 0, comatid, thickness, nodes));
-
-
-
-                Guid lg1 = Guid.NewGuid();
-                //Create load group in local ADM
-                proj.Model.CreateLoadGroup(new LoadGroup(lg1, "lg1", 0));
-
-                Guid lc1 = Guid.NewGuid();
-                //Create load case in local ADM
-                proj.Model.CreateLoadCase(new LoadCase(lc1, "lc1", 0, lg1, 1));
-
-                //Combination
-                CombinationItem[] combinationItems = new CombinationItem[1] { new CombinationItem(lc1, 1.5) };
-                Combination C1 = new Combination(Guid.NewGuid(), "C1", combinationItems)
-                {
-                    Category = eLoadCaseCombinationCategory.AccordingNationalStandard,
-                    NationalStandard = eLoadCaseCombinationStandard.EnUlsSetC
-                };
-                proj.Model.CreateCombination(C1);
-
-                Guid sf1 = Guid.NewGuid();
-                Console.WriteLine($"Set value of surface load on the slab: ");
-                double loadValue = Convert.ToDouble(Console.ReadLine());
-                //Create surface load on slab in local ADM
-                proj.Model.CreateSurfaceLoad(new SurfaceLoad(sf1, "sf1", loadValue, lc1, s1, 2));
-                // line support on B1
-                var lineSupport = new LineSupport(Guid.NewGuid(), "lineSupport", b1)
-                {
-                    Member = b1,
-                    ConstraintRx = eConstraintType.Free,
-                    ConstraintRy = eConstraintType.Free,
-                    ConstraintRz = eConstraintType.Free
-                };
-                proj.Model.CreateLineSupport(lineSupport);
-                //line load on B1
-                var lineLoad = new LineLoadOnBeam(Guid.NewGuid(), "lineLoad")
-                {
-                    Member = b1,
-                    LoadCase = lc1,
-                    Value1 = -12500,
-                    Value2 = -12500,
-                    Direction = eDirection.X
-                };
-                proj.Model.CreateLineLoad(lineLoad);
+                //method which create model
+                CreateModel(proj.Model);
 
                 //Refresh model in SCIA Engineer from local ADM
                 proj.Model.RefreshModel_ToSCIAEngineer();
-                Console.WriteLine($"My model sent to SEn");
-
-
+             
                 // Run calculation
                 proj.RunCalculation();
-                Console.WriteLine($"My model calculate");
+               
 
                 //Initialize Results API
                 ResultsAPI rapi = proj.Model.InitializeResultsAPI();
@@ -240,7 +254,7 @@ namespace SciaOpenAPI_example_simple_structure
                     ResultKey keyIntFor1Db1 = new ResultKey
                     {
                         CaseType = eDsElementType.eDsElementType_LoadCase,
-                        CaseId = lc1,
+                        CaseId = Lc1Id,
                         EntityType = eDsElementType.eDsElementType_Beam,
                         EntityName = "b1",
                         Dimension = eDimension.eDim_1D,
@@ -262,7 +276,7 @@ namespace SciaOpenAPI_example_simple_structure
                         EntityType = eDsElementType.eDsElementType_Beam,
                         EntityName = "b1",
                         CaseType = eDsElementType.eDsElementType_Combination,
-                        CaseId = C1.Id,
+                        CaseId = C1Id,
                         Dimension = eDimension.eDim_1D,
                         ResultType = eResultType.eFemBeamInnerForces,
                         CoordSystem = eCoordSystem.eCoordSys_Local
@@ -276,7 +290,7 @@ namespace SciaOpenAPI_example_simple_structure
                     ResultKey keyReactionsSu1 = new ResultKey
                     {
                         CaseType = eDsElementType.eDsElementType_LoadCase,
-                        CaseId = lc1,
+                        CaseId = Lc1Id,
                         EntityType = eDsElementType.eDsElementType_Node,
                         EntityName = "n1",
                         Dimension = eDimension.eDim_reactionsPoint,
@@ -296,9 +310,9 @@ namespace SciaOpenAPI_example_simple_structure
                     ResultKey keySlab = new ResultKey
                     {
                         EntityType = eDsElementType.eDsElementType_Slab,
-                        EntityName = slabName,
+                        EntityName = SlabName,
                         CaseType = eDsElementType.eDsElementType_LoadCase,
-                        CaseId = lc1,
+                        CaseId = Lc1Id,
                         Dimension = eDimension.eDim_2D,
                         ResultType = eResultType.eFemDeformations,
                         CoordSystem = eCoordSystem.eCoordSys_Local
@@ -326,6 +340,9 @@ namespace SciaOpenAPI_example_simple_structure
                     }
 
                 }
+                else {
+                    throw new Exception("No results accessible");
+                }
 
                 Console.WriteLine($"Press key to exit");
                 Console.ReadKey();
@@ -336,6 +353,9 @@ namespace SciaOpenAPI_example_simple_structure
 
         }
 
+        /// <summary>
+        /// This method represented advance use of OpenAPI, initialization of environment is done on background thanks to Context, EmptyFile is generated on backround and used than follows creation of model, linear calculation and reading results
+        /// </summary>
         private static object SCIAOpenAPIWorker(SCIA.OpenAPI.Environment env)
         {
             //Run SCIA Engineer application
@@ -352,132 +372,13 @@ namespace SciaOpenAPI_example_simple_structure
             }
 
             SCIA.OpenAPI.EsaProject proj = env.OpenProject(EsaFile);
-            //SCIA.OpenAPI.EsaProject proj = env.OpenProject(SciaEngineerProjecTemplate);
             if (proj == null)
             {
                 throw new InvalidOperationException($"File from manifest resource is not opened ! Temp: {env.AppTempPath}");
             }
-            Console.WriteLine($"Proj opened");
-            //Create materials in local ADM
-            Console.WriteLine($"Set grade for concrete material: ");
-            string conMatGrade = Console.ReadLine();
-            Guid comatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new Material(comatid, "conc", 0, conMatGrade));
-            //Guid test = proj.Model.FindMaterialGuid(conMatGrade);
-            Console.WriteLine($"Set grade for steel material: ");
-            string steelMatGrade = Console.ReadLine();
-            Guid stmatid = Guid.NewGuid();
-            proj.Model.CreateMaterial(new Material(stmatid, "steel", 1, steelMatGrade));
-            Console.WriteLine($"Materials created in ADM");
-            //Create cross-sections in local ADM
-            //proj.Model.CreateCrossSection(new CrossSectionParametric(Guid.NewGuid(), "conc.rect", comatid, 1, new double[] { 0.2, 0.4 }));//example of parametric CSS - rectangle
-            Guid css_steel = Guid.NewGuid();
-            Console.WriteLine($"Set steel profile: ");
-            string steelProfile = Console.ReadLine();
-            proj.Model.CreateCrossSection(new CrossSectionManufactured(css_steel, "steel.HEA", stmatid, steelProfile, 1, 0));
-            Console.WriteLine($"CSSs created in ADM");
-
-            Console.WriteLine($"Set parameter a: ");
-            double a = Convert.ToDouble(Console.ReadLine());
-            Console.WriteLine($"Set parameter b: ");
-            double b = Convert.ToDouble(Console.ReadLine());
-            Console.WriteLine($"Set parameter c: ");
-            double c = Convert.ToDouble(Console.ReadLine());
-
-            Guid n1 = Guid.NewGuid();
-            Guid n2 = Guid.NewGuid();
-            Guid n3 = Guid.NewGuid();
-            Guid n4 = Guid.NewGuid();
-            Guid n5 = Guid.NewGuid();
-            Guid n6 = Guid.NewGuid();
-            Guid n7 = Guid.NewGuid();
-            Guid n8 = Guid.NewGuid();
-            //Create structural nodes in local ADM
-            proj.Model.CreateNode(new StructNode(n1, "n1", 0, 0, 0));
-            proj.Model.CreateNode(new StructNode(n2, "n2", a, 0, 0));
-            proj.Model.CreateNode(new StructNode(n3, "n3", a, b, 0));
-            proj.Model.CreateNode(new StructNode(n4, "n4", 0, b, 0));
-            proj.Model.CreateNode(new StructNode(n5, "n5", 0, 0, c));
-            proj.Model.CreateNode(new StructNode(n6, "n6", a, 0, c));
-            proj.Model.CreateNode(new StructNode(n7, "n7", a, b, c));
-            proj.Model.CreateNode(new StructNode(n8, "n8", 0, b, c));
-
-            Guid b1 = Guid.NewGuid();
-            Guid b2 = Guid.NewGuid();
-            Guid b3 = Guid.NewGuid();
-            Guid b4 = Guid.NewGuid();
-            //Create beams in local ADM
-            proj.Model.CreateBeam(new Beam(b1, "b1", css_steel, new Guid[2] { n1, n5 }));
-            proj.Model.CreateBeam(new Beam(b2, "b2", css_steel, new Guid[2] { n2, n6 }));
-            proj.Model.CreateBeam(new Beam(b3, "b3", css_steel, new Guid[2] { n3, n7 }));
-            proj.Model.CreateBeam(new Beam(b4, "b4", css_steel, new Guid[2] { n4, n8 }));
-            //Create fix nodal support in local ADM
-            var Su1 = new PointSupport(Guid.NewGuid(), "Su1", n1)
-            {
-                ConstraintRx = eConstraintType.Free,
-                ConstraintRy = eConstraintType.Free,
-                ConstraintRz = eConstraintType.Free
-            };
-            proj.Model.CreatePointSupport(Su1);
-            proj.Model.CreatePointSupport(new PointSupport(Guid.NewGuid(), "Su2", n2));
-            proj.Model.CreatePointSupport(new PointSupport(Guid.NewGuid(), "Su3", n3));
-            proj.Model.CreatePointSupport(new PointSupport(Guid.NewGuid(), "Su4", n4));
-
-            Guid s1 = Guid.NewGuid();
-            Guid[] nodes = new Guid[4] { n5, n6, n7, n8 };
-            Console.WriteLine($"Set thickness of the slab: ");
-            double thickness = Convert.ToDouble(Console.ReadLine());
-            //Create flat slab in local ADM
-            string slabName = "SLAB_1";
-            proj.Model.CreateSlab(new Slab(s1, slabName, 0, comatid, thickness, nodes));
-
-
-
-            Guid lg1 = Guid.NewGuid();
-            //Create load group in local ADM
-            proj.Model.CreateLoadGroup(new LoadGroup(lg1, "lg1", 0));
-
-            Guid lc1 = Guid.NewGuid();
-            //Create load case in local ADM
-            proj.Model.CreateLoadCase(new LoadCase(lc1, "lc1", 0, lg1, 1));
-
-            //Combination
-            CombinationItem[] combinationItems = new CombinationItem[1] { new CombinationItem(lc1, 1.5) };
-            Combination C1 = new Combination(Guid.NewGuid(), "C1", combinationItems)
-            {
-                Category = eLoadCaseCombinationCategory.AccordingNationalStandard,
-                NationalStandard = eLoadCaseCombinationStandard.EnUlsSetC
-            };
-            proj.Model.CreateCombination(C1);
-
-            Guid sf1 = Guid.NewGuid();
-            Console.WriteLine($"Set value of surface load on the slab: ");
-            double loadValue = Convert.ToDouble(Console.ReadLine());
-            //Create surface load on slab in local ADM
-            proj.Model.CreateSurfaceLoad(new SurfaceLoad(sf1, "sf1", loadValue, lc1, s1, 2));
-            // line support on B1
-            var lineSupport = new LineSupport(Guid.NewGuid(), "lineSupport", b1)
-            {
-                Member = b1,
-                ConstraintRx = eConstraintType.Free,
-                ConstraintRy = eConstraintType.Free,
-                ConstraintRz = eConstraintType.Free
-            };
-            proj.Model.CreateLineSupport(lineSupport);
-            //line load on B1
-            var lineLoad = new LineLoadOnBeam(Guid.NewGuid(), "lineLoad")
-            {
-                Member = b1,
-                LoadCase = lc1,
-                Value1 = -12500,
-                Value2 = -12500,
-                Direction = eDirection.X
-            };
-            proj.Model.CreateLineLoad(lineLoad);
-
+            CreateModel(proj.Model);
             //Refresh model in SCIA Engineer from local ADM
             proj.Model.RefreshModel_ToSCIAEngineer();
-            Console.WriteLine($"My model sent to SEn");
 
 
             // Run calculation
@@ -499,7 +400,7 @@ namespace SciaOpenAPI_example_simple_structure
                         EntityType = eDsElementType.eDsElementType_Beam,
                         EntityName = "b1",
                         CaseType = eDsElementType.eDsElementType_LoadCase,
-                        CaseId = lc1,
+                        CaseId = Lc1Id,
                         Dimension = eDimension.eDim_1D,
                         ResultType = eResultType.eFemBeamInnerForces,
                         CoordSystem = eCoordSystem.eCoordSys_Local
@@ -508,14 +409,15 @@ namespace SciaOpenAPI_example_simple_structure
                 beamB1InnerForLc.Result = resultsApi.LoadResult(beamB1InnerForLc.ResultKey);
                 storage.SetResult(beamB1InnerForLc);
             }
+            { 
             OpenApiE2EResult beamInnerForcesCombi = new OpenApiE2EResult("beamInnerForcesCombi")
             {
                 ResultKey = new ResultKey
                 {
                     EntityType = eDsElementType.eDsElementType_Beam,
-                    EntityName ="b1",
+                    EntityName = "b1",
                     CaseType = eDsElementType.eDsElementType_Combination,
-                    CaseId = C1.Id,
+                    CaseId = C1Id,
                     Dimension = eDimension.eDim_1D,
                     ResultType = eResultType.eFemBeamInnerForces,
                     CoordSystem = eCoordSystem.eCoordSys_Local
@@ -523,15 +425,16 @@ namespace SciaOpenAPI_example_simple_structure
             };
             beamInnerForcesCombi.Result = resultsApi.LoadResult(beamInnerForcesCombi.ResultKey);
             storage.SetResult(beamInnerForcesCombi);
+            }
             {
                 OpenApiE2EResult slabInnerForces = new OpenApiE2EResult("slabInnerForces")
                 {
                     ResultKey = new ResultKey
                     {
                         EntityType = eDsElementType.eDsElementType_Slab,
-                        EntityName = slabName,
+                        EntityName = SlabName,
                         CaseType = eDsElementType.eDsElementType_LoadCase,
-                        CaseId = lc1,
+                        CaseId = Lc1Id,
                         Dimension = eDimension.eDim_2D,
                         ResultType = eResultType.eFemInnerForces,
                         CoordSystem = eCoordSystem.eCoordSys_Local
@@ -546,9 +449,9 @@ namespace SciaOpenAPI_example_simple_structure
                     ResultKey = new ResultKey
                     {
                         EntityType = eDsElementType.eDsElementType_Slab,
-                        EntityName = slabName,
+                        EntityName = SlabName,
                         CaseType = eDsElementType.eDsElementType_LoadCase,
-                        CaseId = lc1,
+                        CaseId = Lc1Id,
                         Dimension = eDimension.eDim_2D,
                         ResultType = eResultType.eFemDeformations,
                         CoordSystem = eCoordSystem.eCoordSys_Local
@@ -563,7 +466,7 @@ namespace SciaOpenAPI_example_simple_structure
                     ResultKey = new ResultKey
                     {
                         CaseType = eDsElementType.eDsElementType_LoadCase,
-                        CaseId = lc1,
+                        CaseId = Lc1Id,
                         EntityType = eDsElementType.eDsElementType_Node,
                         EntityName = "n1",
                         Dimension = eDimension.eDim_reactionsPoint,
@@ -577,13 +480,13 @@ namespace SciaOpenAPI_example_simple_structure
            return storage;
         }
 
-        static void Main(string[] args)
+       //method prepared for patch3
+        private static void RunSCIAOpenAPI_advance()
         {
-            SciaOpenApiAssemblyResolve();
-            //DeleteTemp();
-           // RunSCIAOpenAPI();
+            //Context for OpenAPI
             var Context = new SciaOpenApiContext(SciaEngineerFullPath, SCIAOpenAPIWorker);
             //Context.YourAppTempFullPath = @"C:\WORK\SourceCodes\SciaOpenAPI_example_CSharp_simple_structure\OpenAPIExampleCSharp\bin\Debug\";
+            //Run code which perform operations in OpenAPI - create model, linear calculation and write results to Context
             SciaOpenApiUtils.RunSciaOpenApi(Context);
             if (Context.Exception != null)
             {
@@ -621,6 +524,14 @@ namespace SciaOpenAPI_example_simple_structure
             Console.ReadKey();
         }
 
+        static void Main(string[] args)
+        {
+            SciaOpenApiAssemblyResolve();
+            DeleteTemp();
+            RunSCIAOpenAPI_simple();
+        }
+
+       
     }
 
        
