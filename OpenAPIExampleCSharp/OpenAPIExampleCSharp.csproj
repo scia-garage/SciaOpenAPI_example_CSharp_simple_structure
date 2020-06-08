@@ -41,7 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SCIA.OpenAPI">
-      <HintPath>..\..\..\SCIA-ENGINEER\TESTING-VERSIONS\Full_19.1.2010.32_rel_19.1_patch_2_x86\SCIA.OpenAPI.dll</HintPath>
+      <HintPath>..\..\..\..\Program Files (x86)\SCIA\Engineer19.1\OpenAPI_dll\SCIA.OpenAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
