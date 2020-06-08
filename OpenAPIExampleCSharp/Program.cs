@@ -21,7 +21,7 @@ namespace SciaOpenAPI_example_simple_structure
         private static Guid C1Id { get; } = Guid.NewGuid();
         private static string SlabName { get; } = "S1";
 
-        private static string GetAppPath()
+        private static string GetAppPath() 
         {
             // SEn application installation folder, don't forget run "esa.exe /regserver" from commandline with Admin rights
             return @"C:\Program Files (x86)\SCIA\Engineer19.1\";
