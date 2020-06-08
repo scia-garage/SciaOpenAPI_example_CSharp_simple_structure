@@ -6,10 +6,11 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>OpenAPIExampleCSharp</RootNamespace>
     <AssemblyName>OpenAPIExampleCSharp</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -39,10 +40,12 @@
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SciaOpenAPI_example_simple_structure.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SCIA.OpenAPI, Version=19.1.31.32, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\SCIA\Engineer19.1\SCIA.OpenAPI.dll</HintPath>
+    <Reference Include="SCIA.OpenAPI">
+      <HintPath>..\..\..\..\Program Files (x86)\SCIA\Engineer19.1\OpenAPI_dll\SCIA.OpenAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -60,9 +63,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
