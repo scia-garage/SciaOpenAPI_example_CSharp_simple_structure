@@ -449,7 +449,7 @@ namespace SciaOpenAPI_example_simple_structure
                             CaseType = eDsElementType.eDsElementType_LoadCase,
                             CaseId = Lc1Id,
                             EntityType = eDsElementType.eDsElementType_Beam,
-                            EntityName = "b1",
+                            EntityName = beamName,
                             Dimension = eDimension.eDim_1D,
                             ResultType = eResultType.eFemBeamInnerForces,
                             CoordSystem = eCoordSystem.eCoordSys_Local
@@ -467,7 +467,7 @@ namespace SciaOpenAPI_example_simple_structure
                         ResultKey keyIntFor1Db1Combi = new ResultKey
                         {
                             EntityType = eDsElementType.eDsElementType_Beam,
-                            EntityName = "b1",
+                            EntityName = beamName,
                             CaseType = eDsElementType.eDsElementType_Combination,
                             CaseId = C1Id,
                             Dimension = eDimension.eDim_1D,
@@ -604,7 +604,7 @@ namespace SciaOpenAPI_example_simple_structure
                         ResultKey = new ResultKey
                         {
                             EntityType = eDsElementType.eDsElementType_Beam,
-                            EntityName = "b1",
+                            EntityName = beamName,
                             CaseType = eDsElementType.eDsElementType_LoadCase,
                             CaseId = Lc1Id,
                             Dimension = eDimension.eDim_1D,
@@ -621,7 +621,7 @@ namespace SciaOpenAPI_example_simple_structure
                         ResultKey = new ResultKey
                         {
                             EntityType = eDsElementType.eDsElementType_Beam,
-                            EntityName = "b1",
+                            EntityName = beamName,
                             CaseType = eDsElementType.eDsElementType_LoadCase,
                             CaseId = Lc1Id,
                             Dimension = eDimension.eDim_1D,
@@ -638,7 +638,7 @@ namespace SciaOpenAPI_example_simple_structure
                         ResultKey = new ResultKey
                         {
                             EntityType = eDsElementType.eDsElementType_Beam,
-                            EntityName = "b1",
+                            EntityName = beamName,
                             CaseType = eDsElementType.eDsElementType_LoadCase,
                             CaseId = Lc1Id,
                             Dimension = eDimension.eDim_1D,
@@ -655,7 +655,7 @@ namespace SciaOpenAPI_example_simple_structure
                         ResultKey = new ResultKey
                         {
                             EntityType = eDsElementType.eDsElementType_Beam,
-                            EntityName = "b1",
+                            EntityName = beamName,
                             CaseType = eDsElementType.eDsElementType_Combination,
                             CaseId = C1Id,
                             Dimension = eDimension.eDim_1D,
