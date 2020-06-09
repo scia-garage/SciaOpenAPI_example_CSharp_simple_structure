@@ -435,7 +435,7 @@ namespace SciaOpenAPI_example_simple_structure
                 #endregion
                 #endregion
                 #region  ---------- Results -------------
-          
+
                 //Initialize Results API
                 using (ResultsAPI rapi = proj.Model.InitializeResultsAPI())
                 {
@@ -754,38 +754,75 @@ namespace SciaOpenAPI_example_simple_structure
                     storage.SetResult(slabInnerForcesExtended);
                 }
 
-                {
-                    OpenApiE2EResult reactions = new OpenApiE2EResult("Reactions")
-                    {
-                        ResultKey = new ResultKey
-                        {
-                            CaseType = eDsElementType.eDsElementType_LoadCase,
-                            CaseId = Lc1Id,
-                            EntityType = eDsElementType.eDsElementType_Node,
-                            EntityName = "n1",
-                            Dimension = eDimension.eDim_reactionsPoint,
-                            ResultType = eResultType.eReactionsNodes,
-                            CoordSystem = eCoordSystem.eCoordSys_Global
-                        }
-                    };
-                    reactions.Result = resultsApi.LoadResult(reactions.ResultKey);
-                    storage.SetResult(reactions);
-                }
+                //{
+                //    OpenApiE2EResult reactions = new OpenApiE2EResult("ReactionsN1")
+                //    {
+                //        ResultKey = new ResultKey
+                //        {
+                //            CaseType = eDsElementType.eDsElementType_LoadCase,
+                //            CaseId = Lc1Id,
+                //            EntityType = eDsElementType.eDsElementType_Node,
+                //            EntityName = "n1",
+                //            Dimension = eDimension.eDim_reactionsPoint,
+                //            ResultType = eResultType.eReactionsNodes,
+                //            CoordSystem = eCoordSystem.eCoordSys_Global
+                //        }
+                //    };
+                //    reactions.Result = resultsApi.LoadResult(reactions.ResultKey);
+                //    storage.SetResult(reactions);
+                //}
+                //{
+                //    OpenApiE2EResult reactions = new OpenApiE2EResult("ReactionsSu1")
+                //    {
+                //        ResultKey = new ResultKey
+                //        {
+                //            CaseType = eDsElementType.eDsElementType_LoadCase,
+                //            CaseId = Lc1Id,
+                //            EntityType = eDsElementType.eDsElementType_PointSupportPoint,
+                //            EntityName = "Su1",
+                //            Dimension = eDimension.eDim_reactionsPoint,
+                //            ResultType = eResultType.eResultTypeReactionsSupport0D,
+                //            CoordSystem = eCoordSystem.eCoordSys_Global,
 
+                //        }
+                //    };
+                //    reactions.Result = resultsApi.LoadResult(reactions.ResultKey);
+                //    storage.SetResult(reactions);
+                //}
+                //{
+                //    OpenApiE2EResult ReactionslinSupBeam = new OpenApiE2EResult("ReactionslinSupBeam")
+                //    {
+                //        ResultKey = new ResultKey
+                //        {
+                //            EntityType = eDsElementType.eDsElementType_LineSupportLine,
+                //            EntityName = "linSupBeam",
+                //            Dimension = eDimension.eDim_reactionsLine,
+                //            CoordSystem = eCoordSystem.eCoordSys_Global,
+                //            CaseType = eDsElementType.eDsElementType_LoadCase,
+                //            CaseId = Lc1Id,
+                //            ResultType = eResultType.eResultTypeReactionsSupport1D,
+
+                //        }
+                //    };
+                //    ReactionslinSupBeam.Result = resultsApi.LoadResult(ReactionslinSupBeam.ResultKey);
+                //    storage.SetResult(ReactionslinSupBeam);
+                //}             
 
                 return storage;
             }
             #endregion
         }
 
-        //method prepared for patch3
         private static void RunSCIAOpenAPI_advance()
         {
 
             //Context for OpenAPI
-            var Context = new SciaOpenApiContext(SciaEngineerFullPath, SCIAOpenAPIWorker);
-            Context.YourAppTempFullPath = AppLogPath;
-            Context.SciaEngineerTempFolderImputedByUser = SciaEngineerTempPath;
+            var Context = new SciaOpenApiContext(SciaEngineerFullPath, SCIAOpenAPIWorker)
+            {
+                YourAppTempFullPath = AppLogPath,
+                SciaEngineerTempFolderImputedByUser = SciaEngineerTempPath
+            };
+
             //Run code which perform operations in OpenAPI - create model, linear calculation and write results to Context
             SciaOpenApiUtils.RunSciaOpenApi(Context);
             if (Context.Exception != null)
@@ -798,11 +835,12 @@ namespace SciaOpenAPI_example_simple_structure
                 Console.WriteLine("SOMETHING IS WRONG NO Results DATA !");
                 return;
             }
-            //TextBlockOpenApi.Text = "RESULTS";
-            //foreach (var item in data.GetAll())
-            //{
-            //    Console.WriteLine(item.Value.Result.GetTextOutput());             
-            //}
+            //Show stored results data
+            foreach (var item in data.GetAll())
+            {
+                Console.WriteLine(item.Value.Result.GetTextOutput());
+            }
+
             var slabDef = data.GetResult("slabDeformations").Result;
             if (slabDef != null)
             {
