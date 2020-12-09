@@ -26,7 +26,7 @@ namespace SciaOpenAPI_example_simple_structure
         private static string GetAppPath()
         {
             // SEn application installation folder, don't forget run "esa.exe /regserver" from commandline with Admin rights
-            return @"C:\Program Files (x86)\SCIA\Engineer19.1\";
+            return @"C:\WORK\SCIA-ENGINEER\TESTING-VERSIONS\Full_99.01021.1463.32_develop_x86"; //@"C:\Program Files (x86)\SCIA\Engineer20.0";
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SciaOpenAPI_example_simple_structure
         private static string GetTempPath()
         {
             // Must be SEn application temp path, run SEn and go to menu: Setup -> Options -> Directories -> Temporary files
-            return @"C:\Users\jbroz\ESA19.1\Temp\";
+            return @"C:\WORK\SCIA-ENGINEER\TESTING-VERSIONS\Full_99.01021.1463.32_develop_x86\Temp\";//@"C:\Users\jbroz\ESA20.0\Temp\";
         }
 
         static private string SciaEngineerProjecTemplate => GetTemplatePath();
@@ -113,13 +113,7 @@ namespace SciaOpenAPI_example_simple_structure
             };
         }
 
-        #region Class Enums
-        enum Material_Type { Concrete = 0, Steel = 1, Timber = 2, Aluminium = 3, Masonry = 4, Other = 5 }
-        enum Slab_Type { Plate = 0, Wall = 1, Shell = 2 }
-        enum LoadCase_actionType { Permanent = 0, Variable = 1, Accidental = 2 }
-        enum LoadCase_loadCaseType { SelfWeight = 0, Standard = 1, Prestress = 2, Dynamic = 3, PrimaryEffect = 4, Static = 5 }
-        #endregion
-
+       
         /// <summary>
         ///Method create model in proj environment
         /// </summary>
@@ -128,13 +122,13 @@ namespace SciaOpenAPI_example_simple_structure
 
             #region  ---------- Geometry -----------
             #region Create Materials
-            Material concmat = new Material(Guid.NewGuid(), "conc", (int)Material_Type.Concrete, "C30/37");
-            Material steelmat = new Material(Guid.NewGuid(), "steel", (int)Material_Type.Steel, "S 355");
+            Material concmat = new Material(Guid.NewGuid(), "conc", MaterialType.Concrete, "C30/37");
+            Material steelmat = new Material(Guid.NewGuid(), "steel", MaterialType.Steel, "S 355");
             foreach (var x in new List<Material> { concmat, steelmat }) { model.CreateMaterial(x); }
             #endregion
             #region Create Cross Sections
-            CrossSectionManufactured hea260 = new CrossSectionManufactured(Guid.NewGuid(), "steel.HEA", steelmat.Id, "HEA260", 1, 0);
-            CrossSectionParametric rect300x300 = new CrossSectionParametric(Guid.NewGuid(), "r300x300", concmat.Id, 1, new double[] { 300.0, 300.0 });
+            CrossSectionManufactured hea260 = new CrossSectionManufactured(Guid.NewGuid(), "steel.HEA", steelmat.Id, "HEA260", FormCode.ISection, DescriptionId.NotSpecified);
+            CrossSectionParametric rect300x300 = new CrossSectionParametric(Guid.NewGuid(), "r300x300", concmat.Id, ProfileLibraryId.Rectangle, new double[] { 0.3, 0.3 });
             model.CreateCrossSection(hea260);
             model.CreateCrossSection(rect300x300);
             #endregion
@@ -154,19 +148,19 @@ namespace SciaOpenAPI_example_simple_structure
             #endregion
             #region Create Beams
             Beam b1 = new Beam(Guid.NewGuid(), beamName, hea260.Id, new Guid[2] { n1.Id, n5.Id });
-            Beam b2 = new Beam(Guid.NewGuid(), "b2", hea260.Id, new Guid[2] { n2.Id, n6.Id });
+            Beam b2 = new Beam(Guid.NewGuid(), "b2", rect300x300.Id, new Guid[2] { n2.Id, n6.Id });
             Beam b3 = new Beam(Guid.NewGuid(), "b3", hea260.Id, new Guid[2] { n3.Id, n7.Id });
             Beam b4 = new Beam(Guid.NewGuid(), "b4", hea260.Id, new Guid[2] { n4.Id, n8.Id });
             foreach (var x in new List<Beam> { b1, b2, b3, b4 }) { model.CreateBeam(x); }
             #endregion
             #region Create Slab
             double thickness = 0.30;
-            Slab s1 = new Slab(Guid.NewGuid(), SlabName, (int)Slab_Type.Plate, concmat.Id, thickness, new Guid[4] { n5.Id, n6.Id, n7.Id, n8.Id });
+            Slab s1 = new Slab(Guid.NewGuid(), SlabName, Member2DType.Plate, concmat.Id, thickness, new Guid[4] { n5.Id, n6.Id, n7.Id, n8.Id });
             model.CreateSlab(s1);
             #endregion
             #region Create Support - in Node
-            PointSupport Su1 = new PointSupport(Guid.NewGuid(), "Su1", n1.Id) { ConstraintRx = eConstraintType.Free, ConstraintRy = eConstraintType.Free, ConstraintRz = eConstraintType.Free };
-            PointSupport Su2 = new PointSupport(Guid.NewGuid(), "Su2", n2.Id) { ConstraintZ = eConstraintType.Flexible, StiffnessZ = 10000.0 };
+            PointSupport Su1 = new PointSupport(Guid.NewGuid(), "Su1", n1.Id) { ConstraintRx = ConstraintType.Free, ConstraintRy = ConstraintType.Free, ConstraintRz = ConstraintType.Free };
+            PointSupport Su2 = new PointSupport(Guid.NewGuid(), "Su2", n2.Id) { ConstraintZ = ConstraintType.Flexible, StiffnessZ = 10000.0 };
             PointSupport Su3 = new PointSupport(Guid.NewGuid(), "Su3", n3.Id);
             PointSupport Su4 = new PointSupport(Guid.NewGuid(), "Su4", n4.Id);
             foreach (var x in new List<PointSupport> { Su1, Su2, Su3, Su4 }) { model.CreatePointSupport(x); }
@@ -174,26 +168,26 @@ namespace SciaOpenAPI_example_simple_structure
             #region Create Support - on Beam & on Slab Edge
             LineSupport lineSupport_onBeam = new LineSupport(Guid.NewGuid(), "linSupBeam", b1.Id)
             {
-                ConstraintRx = eConstraintType.Free,
-                ConstraintRy = eConstraintType.Free,
-                ConstraintRz = eConstraintType.Free,
-                ConstraintX = eConstraintType.Flexible,
+                ConstraintRx = ConstraintType.Free,
+                ConstraintRy = ConstraintType.Free,
+                ConstraintRz = ConstraintType.Free,
+                ConstraintX = ConstraintType.Flexible,
                 StiffnessX = 10.0,
-                ConstraintY = eConstraintType.Flexible,
+                ConstraintY = ConstraintType.Flexible,
                 StiffnessY = 10.0,
-                ConstraintZ = eConstraintType.Flexible,
+                ConstraintZ = ConstraintType.Flexible,
                 StiffnessZ = 10.0,
             };
             LineSupport lineSupport_onEdge = new LineSupport(Guid.NewGuid(), "linSupEdge", s1.Id)
             {
-                ConstraintRx = eConstraintType.Free,
-                ConstraintRy = eConstraintType.Free,
-                ConstraintRz = eConstraintType.Free,
-                ConstraintX = eConstraintType.Flexible,
+                ConstraintRx = ConstraintType.Free,
+                ConstraintRy = ConstraintType.Free,
+                ConstraintRz = ConstraintType.Free,
+                ConstraintX = ConstraintType.Flexible,
                 StiffnessX = 10.0,
-                ConstraintY = eConstraintType.Flexible,
+                ConstraintY = ConstraintType.Flexible,
                 StiffnessY = 10.0,
-                ConstraintZ = eConstraintType.Flexible,
+                ConstraintZ = ConstraintType.Flexible,
                 StiffnessZ = 10.0,
                 EdgeIndex = 2
             };
@@ -202,20 +196,23 @@ namespace SciaOpenAPI_example_simple_structure
             #endregion
             #region  ---------- Loads ---------------
             #region Create Load Group
-            LoadGroup lgperm = new LoadGroup(Guid.NewGuid(), "lgperm", (int)eLoadGroup_Load.eLoadGroup_Load_Permanent);
-            LoadGroup lgvar1 = new LoadGroup(Guid.NewGuid(), "lgvar1", (int)eLoadGroup_Load.eLoadGroup_Load_Variable);
-            LoadGroup lgvar2 = new LoadGroup(Guid.NewGuid(), "lgvar2", (int)eLoadGroup_Load.eLoadGroup_Load_Variable);
-            LoadGroup lgvar3 = new LoadGroup(Guid.NewGuid(), "lgvar3", (int)eLoadGroup_Load.eLoadGroup_Load_Variable);
+            LoadGroup lgperm = new LoadGroup(Guid.NewGuid(), "lgperm", LoadGroupType.Permanent);
+            LoadGroup lgvar1 = new LoadGroup(Guid.NewGuid(), "lgvar1", LoadGroupType.Variable);
+            LoadGroup lgvar2 = new LoadGroup(Guid.NewGuid(), "lgvar2", LoadGroupType.Variable);
+            LoadGroup lgvar3 = new LoadGroup(Guid.NewGuid(), "lgvar3", LoadGroupType.Variable);
             foreach (var x in new List<LoadGroup> { lgperm, lgvar1, lgvar2, lgvar3 }) { model.CreateLoadGroup(x); }
             #endregion
             #region Create Load Case
-            LoadCase lc_sw = new LoadCase(Guid.NewGuid(), "lc_sw", (int)LoadCase_actionType.Permanent, lgperm.Id, (int)LoadCase_loadCaseType.SelfWeight);
-            LoadCase lc_perm = new LoadCase(Lc1Id, "lc_perm", (int)LoadCase_actionType.Permanent, lgperm.Id, (int)LoadCase_loadCaseType.Standard);
-            LoadCase lc_var1 = new LoadCase(Guid.NewGuid(), "lc_var1", (int)LoadCase_actionType.Variable, lgvar1.Id, (int)LoadCase_loadCaseType.Static);
-            LoadCase lc_var2 = new LoadCase(Guid.NewGuid(), "lc_var2", (int)LoadCase_actionType.Variable, lgvar2.Id, (int)LoadCase_loadCaseType.Static);
-            LoadCase lc_var3a = new LoadCase(Guid.NewGuid(), "lc_var3a", (int)LoadCase_actionType.Variable, lgvar3.Id, (int)LoadCase_loadCaseType.Static);
-            LoadCase lc_var3b = new LoadCase(Guid.NewGuid(), "lc_var3b", (int)LoadCase_actionType.Variable, lgvar3.Id, (int)LoadCase_loadCaseType.Static);
-            LoadCase lc_var3c = new LoadCase(Guid.NewGuid(), "lc_var3c", (int)LoadCase_actionType.Variable, lgvar3.Id, (int)LoadCase_loadCaseType.Static);
+            LoadCase lc_sw = new LoadCase(Guid.NewGuid(), "lc_sw",ActionType.Permanent, lgperm.Id, LoadCaseType.SelfWeight);
+            LoadCase lc_perm = new LoadCase(Lc1Id, "lc_perm", ActionType.Permanent, lgperm.Id, LoadCaseType.Standard);
+            LoadCase lc_var1 = new LoadCase(Guid.NewGuid(), "lc_var1", ActionType.Variable, lgvar1.Id, LoadCaseType.Static);
+            LoadCase lc_var2 = new LoadCase(Guid.NewGuid(), "lc_var2", ActionType.Variable, lgvar2.Id, LoadCaseType.Static);
+            LoadCase lc_var3a = new LoadCase(Guid.NewGuid(), "lc_var3a", ActionType.Variable, lgvar3.Id, LoadCaseType.Static);
+            LoadCase lc_var3b = new LoadCase(Guid.NewGuid(), "lc_var3b", ActionType.Variable, lgvar3.Id, LoadCaseType.Static);
+            LoadCase lc_var3c = new LoadCase(Guid.NewGuid(), "lc_var3c", ActionType.Variable, lgvar3.Id, LoadCaseType.Static)
+            {
+                Duration = Duration.Long
+            };
             foreach (var x in new List<LoadCase> { lc_sw, lc_perm }) { model.CreateLoadCase(x); }
             #endregion
             #region Create Load Combinations
@@ -227,70 +224,70 @@ namespace SciaOpenAPI_example_simple_structure
             };
             Combination C_EnUlsB = new Combination(C1Id, "C_EnUlsB", combinationItems)
             {
-                Category = eLoadCaseCombinationCategory.AccordingNationalStandard,
-                NationalStandard = eLoadCaseCombinationStandard.EnUlsSetB,
+                Category = LoadCaseCombinationCategory.AccordingNationalStandard,
+                NationalStandard = LoadCaseCombinationStandard.EnUlsSetB,
             };
             Combination C_EnUlsC = new Combination(Guid.NewGuid(), "C_EnUlsC", combinationItems)
             {
-                Category = eLoadCaseCombinationCategory.AccordingNationalStandard,
-                NationalStandard = eLoadCaseCombinationStandard.EnUlsSetC
+                Category = LoadCaseCombinationCategory.AccordingNationalStandard,
+                NationalStandard = LoadCaseCombinationStandard.EnUlsSetC
             };
             Combination C_EnSlsChar = new Combination(Guid.NewGuid(), "C_EnSlsChar", combinationItems)
             {
-                Category = eLoadCaseCombinationCategory.AccordingNationalStandard,
-                NationalStandard = eLoadCaseCombinationStandard.EnSlsCharacteristic
+                Category = LoadCaseCombinationCategory.AccordingNationalStandard,
+                NationalStandard = LoadCaseCombinationStandard.EnSlsCharacteristic
             };
             Combination C_EnSlsFreq = new Combination(Guid.NewGuid(), "C_EnSlsFreq", combinationItems)
             {
-                Category = eLoadCaseCombinationCategory.AccordingNationalStandard,
-                NationalStandard = eLoadCaseCombinationStandard.EnSlsFrequent
+                Category = LoadCaseCombinationCategory.AccordingNationalStandard,
+                NationalStandard = LoadCaseCombinationStandard.EnSlsFrequent
             };
             Combination C_EnSlsQP = new Combination(Guid.NewGuid(), "C_EnSlsQP", combinationItems)
             {
-                Category = eLoadCaseCombinationCategory.AccordingNationalStandard,
-                NationalStandard = eLoadCaseCombinationStandard.EnSlsQuasiPermanent
+                Category = LoadCaseCombinationCategory.AccordingNationalStandard,
+                NationalStandard = LoadCaseCombinationStandard.EnSlsQuasiPermanent
             };
             Combination C_Acc1 = new Combination(Guid.NewGuid(), "C_Acc1", combinationItems)
             {
-                //Category = eLoadCaseCombinationCategory.AccidentalLimitState,
-                Category = eLoadCaseCombinationCategory.AccordingNationalStandard,
-                NationalStandard = eLoadCaseCombinationStandard.EnAccidental1
+                //Category = LoadCaseCombinationCategory.AccidentalLimitState,
+                Category = LoadCaseCombinationCategory.AccordingNationalStandard,
+                NationalStandard = LoadCaseCombinationStandard.EnAccidental1
             };
             Combination C_Acc2 = new Combination(Guid.NewGuid(), "C_Acc2", combinationItems)
             {
-                //Category = eLoadCaseCombinationCategory.AccidentalLimitState,
-                Category = eLoadCaseCombinationCategory.AccordingNationalStandard,
-                NationalStandard = eLoadCaseCombinationStandard.EnAccidental2
+                //Category = LoadCaseCombinationCategory.AccidentalLimitState,
+                Category = LoadCaseCombinationCategory.AccordingNationalStandard,
+                NationalStandard = LoadCaseCombinationStandard.EnAccidental2
             };
             Combination C_ULS = new Combination(Guid.NewGuid(), "C_ULS", combinationItems)
             {
-                Category = eLoadCaseCombinationCategory.UltimateLimitState,
+                Category = LoadCaseCombinationCategory.UltimateLimitState,
             };
             Combination C_SLS = new Combination(Guid.NewGuid(), "C_SLS", combinationItems)
             {
-                Category = eLoadCaseCombinationCategory.ServiceabilityLimitState
+                Category = LoadCaseCombinationCategory.ServiceabilityLimitState
             };
             foreach (var x in new List<Combination> { C_EnUlsB, C_EnUlsC, C_EnSlsChar, C_EnSlsFreq, C_EnSlsQP, C_Acc1, C_Acc2 }) { model.CreateCombination(x); }
             #endregion
             #region Create Load - Point Loads - in Node
             double loadValue;
             loadValue = -12500.0;
-            PointLoadInNode pln1 = new PointLoadInNode(Guid.NewGuid(), "pln1", loadValue, lc_perm.Id, n4.Id, (int)eDirection.X);
+            PointLoadInNode pln1 = new PointLoadInNode(Guid.NewGuid(), "pln1", loadValue, lc_perm.Id, n4.Id, ActionDirection.X);
             model.CreatePointLoadInNode(pln1);
             #endregion
             #region Create Load - Point Loads - Free
             loadValue = -12500.0;
-            PointLoadFree plf1 = new PointLoadFree(Guid.NewGuid(), "plf1", lc_perm.Id, loadValue, a / 3.0, b / 3.0, c, (int)eDirection.Z, c - 1.0, c + 1.0);
+            PointLoadFree plf1 = new PointLoadFree(Guid.NewGuid(), "plf1", lc_perm.Id, loadValue, a / 3.0, b / 3.0, c, ActionDirection.Z, c - 1.0, c + 1.0);
             model.CreatePointLoadFree(plf1);
             #endregion
             #region Create Load - Surface Loads - on Slab
             loadValue = -12500.0;
-            SurfaceLoad sf1 = new SurfaceLoad(Guid.NewGuid(), "sf1", loadValue, lc_perm.Id, s1.Id, (int)eDirection.Z);
-            SurfaceLoad sf2 = new SurfaceLoad(Guid.NewGuid(), "sf2", loadValue, lc_var1.Id, s1.Id, (int)eDirection.Y);
-            SurfaceLoad sf3 = new SurfaceLoad(Guid.NewGuid(), "sf3", loadValue, lc_var2.Id, s1.Id, (int)eDirection.X);
-            SurfaceLoad sf4 = new SurfaceLoad(Guid.NewGuid(), "sf4", loadValue, lc_var3a.Id, s1.Id, (int)eDirection.X);
-            SurfaceLoad sf5 = new SurfaceLoad(Guid.NewGuid(), "sf5", loadValue, lc_var3b.Id, s1.Id, (int)eDirection.Y);
-            SurfaceLoad sf6 = new SurfaceLoad(Guid.NewGuid(), "sf6", loadValue, lc_var3c.Id, s1.Id, (int)eDirection.Z);
+            SurfaceLoad sf1 = new SurfaceLoad(Guid.NewGuid(), "sf1", loadValue, lc_perm.Id, s1.Id, ActionDirection.Z);
+            SurfaceLoad sf2 = new SurfaceLoad(Guid.NewGuid(), "sf2", loadValue, lc_var1.Id, s1.Id, ActionDirection.Y);
+            SurfaceLoad sf3 = new SurfaceLoad(Guid.NewGuid(), "sf3", loadValue, lc_var2.Id, s1.Id, ActionDirection.X);
+            SurfaceLoad sf4 = new SurfaceLoad(Guid.NewGuid(), "sf4", loadValue, lc_var3a.Id, s1.Id, ActionDirection.X);
+            SurfaceLoad sf5 = new SurfaceLoad(Guid.NewGuid(), "sf5", loadValue, lc_var3b.Id, s1.Id, ActionDirection.Y);
+            SurfaceLoad sf6 = new SurfaceLoad(Guid.NewGuid(), "sf6", loadValue, lc_var3c.Id, s1.Id, ActionDirection.Z);
             foreach (var x in new List<SurfaceLoad> { sf1 }) { model.CreateSurfaceLoad(x); }
             #endregion
             #region Create Load - Line Load - on Beam & on Slab Edge
@@ -298,16 +295,16 @@ namespace SciaOpenAPI_example_simple_structure
             {
                 Member = b1.Id,
                 LoadCase = lc_perm.Id,
-                Distribution = eLineLoadDistribution.Trapez,
+                Distribution = CurveDistribution.Trapezoidal,
                 Value1 = -12500,
                 Value2 = -12500,
-                CoordinateDefinition = eCoordinateDefinition.Relative,
+                CoordinateDefinition = CoordinateDefinition.Relative,
                 StartPoint = 0.01,
                 EndPoint = 0.99,
-                CoordinationSystem = eCoordinationSystem.GCS,
-                Direction = eDirection.X,
-                Origin = eLineOrigin.FromStart,
-                Location = eLineLoadLocation.Length,
+                CoordinationSystem = CoordinateSystem.Global,
+                Direction = ActionDirection.X,
+                Origin = Origin.FromStart,
+                Location = Location.Length,
                 EccentricityEy = 0.0,
                 EccentricityEz = 0.0
             };
@@ -315,16 +312,16 @@ namespace SciaOpenAPI_example_simple_structure
             {
                 Member = b1.Id,
                 LoadCase = lc_var1.Id,
-                Distribution = eLineLoadDistribution.Trapez,
+                Distribution = CurveDistribution.Trapezoidal,
                 Value1 = -12500,
                 Value2 = 12500,
-                CoordinateDefinition = eCoordinateDefinition.Relative,
+                CoordinateDefinition = CoordinateDefinition.Relative,
                 StartPoint = 0.01,
                 EndPoint = 0.99,
-                CoordinationSystem = eCoordinationSystem.GCS,
-                Direction = eDirection.Y,
-                Origin = eLineOrigin.FromStart,
-                Location = eLineLoadLocation.Projection,
+                CoordinationSystem = CoordinateSystem.Global,
+                Direction = ActionDirection.Y,
+                Origin = Origin.FromStart,
+                Location = Location.Projection,
                 EccentricityEy = 0.0,
                 EccentricityEz = 0.0
             };
@@ -333,64 +330,64 @@ namespace SciaOpenAPI_example_simple_structure
                 Member = s1.Id,
                 LoadCase = lc_var3a.Id,
                 EdgeIndex = 0,
-                Distribution = eLineLoadDistribution.Trapez,
+                Distribution = CurveDistribution.Trapezoidal,
                 Value1 = -12500,
                 Value2 = 12500,
-                CoordinateDefinition = eCoordinateDefinition.Relative,
+                CoordinateDefinition = CoordinateDefinition.Relative,
                 StartPoint = 0.01,
                 EndPoint = 0.99,
-                CoordinationSystem = eCoordinationSystem.GCS,
-                Direction = eDirection.Z,
-                Origin = eLineOrigin.FromStart,
-                Location = eLineLoadLocation.Length
+                CoordinationSystem = CoordinateSystem.Global,
+                Direction = ActionDirection.Z,
+                Origin = Origin.FromStart,
+                Location = Location.Length
             };
             var lin3b = new LineLoadOnSlabEdge(Guid.NewGuid(), "lin3b")
             {
                 Member = s1.Id,
                 LoadCase = lc_var3b.Id,
                 EdgeIndex = 1,
-                Distribution = eLineLoadDistribution.Trapez,
+                Distribution = CurveDistribution.Trapezoidal,
                 Value1 = -12500,
                 Value2 = 12500,
-                CoordinateDefinition = eCoordinateDefinition.Relative,
+                CoordinateDefinition = CoordinateDefinition.Relative,
                 StartPoint = 0.01,
                 EndPoint = 0.99,
-                CoordinationSystem = eCoordinationSystem.GCS,
-                Direction = eDirection.Z,
-                Origin = eLineOrigin.FromStart,
-                Location = eLineLoadLocation.Length
+                CoordinationSystem = CoordinateSystem.Global,
+                Direction = ActionDirection.Z,
+                Origin = Origin.FromStart,
+                Location = Location.Length
             };
             var lin3c = new LineLoadOnSlabEdge(Guid.NewGuid(), "lin3c")
             {
                 Member = s1.Id,
                 LoadCase = lc_var3c.Id,
                 EdgeIndex = 2,
-                Distribution = eLineLoadDistribution.Trapez,
+                Distribution = CurveDistribution.Trapezoidal,
                 Value1 = -12500,
                 Value2 = 12500,
-                CoordinateDefinition = eCoordinateDefinition.Relative,
+                CoordinateDefinition = CoordinateDefinition.Relative,
                 StartPoint = 0.01,
                 EndPoint = 0.99,
-                CoordinationSystem = eCoordinationSystem.GCS,
-                Direction = eDirection.Z,
-                Origin = eLineOrigin.FromStart,
-                Location = eLineLoadLocation.Length
+                CoordinationSystem = CoordinateSystem.Global,
+                Direction = ActionDirection.Z,
+                Origin = Origin.FromStart,
+                Location = Location.Length
             };
             var lin3d = new LineLoadOnSlabEdge(Guid.NewGuid(), "lin3d")
             {
                 Member = s1.Id,
                 LoadCase = lc_perm.Id,
                 EdgeIndex = 3,
-                Distribution = eLineLoadDistribution.Trapez,
+                Distribution = CurveDistribution.Trapezoidal,
                 Value1 = -12500,
                 Value2 = 12500,
-                CoordinateDefinition = eCoordinateDefinition.Relative,
+                CoordinateDefinition = CoordinateDefinition.Relative,
                 StartPoint = 0.01,
                 EndPoint = 0.99,
-                CoordinationSystem = eCoordinationSystem.GCS,
-                Direction = eDirection.Z,
-                Origin = eLineOrigin.FromStart,
-                Location = eLineLoadLocation.Length
+                CoordinationSystem = CoordinateSystem.Global,
+                Direction = ActionDirection.Z,
+                Origin = Origin.FromStart,
+                Location = Location.Length
             };
             foreach (var x in new List<LineLoadOnBeam> { lin1 }) { model.CreateLineLoad(x); }
             foreach (var x in new List<LineLoadOnSlabEdge> { lin3d }) { model.CreateLineLoad(x); }
@@ -406,7 +403,7 @@ namespace SciaOpenAPI_example_simple_structure
         static private void RunSCIAOpenAPI_simple()
         {
             //Initialization of OpenAPI environment
-            using (SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(SciaEngineerFullPath, AppLogPath, "1.0.0.0"))// path to the location of your installation and temp path for logs)
+            using (SCIA.OpenAPI.Environment env = new SCIA.OpenAPI.Environment(SciaEngineerFullPath, AppLogPath, "2.0.0.0"))// path to the location of your installation and temp path for logs)
             {
                 //Run SCIA Engineer application
                 bool openedSE = env.RunSCIAEngineer(SCIA.OpenAPI.Environment.GuiMode.ShowWindowShow);
